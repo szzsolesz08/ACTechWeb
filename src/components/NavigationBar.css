@@ -1,0 +1,319 @@
+/* Modern Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Hide mobile auth by default (desktop view) */
+.mobile-auth {
+  display: none;
+}
+
+/* Prevent scrolling when mobile menu is open */
+body.menu-open {
+  overflow: hidden;
+}
+
+.nav-bar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: linear-gradient(to right, #007bff, #0056b3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.nav-bar.scrolled {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 70px;
+}
+
+.nav-logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: 0.8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+}
+
+.logo-icon {
+  font-size: 1.8rem;
+  margin-right: 10px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+}
+
+.nav-links ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  margin: 0 15px;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 5px 0;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.nav-links a:hover {
+  color: white;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: white;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  transition: transform 0.3s ease;
+  opacity: 0;
+}
+
+.nav-links a:hover::after {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+.nav-booking {
+  background-color: white;
+  color: #0056b3 !important;
+  padding: 10px 20px !important;
+  border-radius: 50px;
+  font-weight: 600 !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  text-shadow: none !important;
+}
+
+.nav-booking:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  background-color: #f8f9fa;
+}
+
+.nav-booking::after {
+  display: none !important;
+}
+
+.nav-auth {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.nav-login, .nav-register {
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  border-radius: 50px;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+  z-index: 1;
+}
+
+.nav-login {
+  color: white;
+  padding: 0 20px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+.nav-login::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+.nav-login:hover {
+  border-color: white;
+  transform: translateY(-2px);
+}
+
+.nav-login:hover::before {
+  width: 100%;
+}
+
+.nav-register {
+  background-color: white;
+  color: #0056b3;
+  padding: 0 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.nav-register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  background-color: #f8f9fa;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  cursor: pointer;
+}
+
+.mobile-menu-toggle span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: var(--dark-color);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 1113px) {
+  /* Hide desktop auth buttons but we'll add them to the mobile menu later */
+  .nav-auth {
+    display: none;
+  }
+  
+  .mobile-menu-toggle {
+    display: flex;
+  }
+  
+  .nav-links {
+    position: fixed;
+    top: 70px;
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 70px);
+    background: linear-gradient(to bottom, #007bff, #0056b3);
+    transition: left 0.3s ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: calc(100vh - 70px);
+  }
+  
+  .nav-links.active {
+    left: 0;
+  }
+  
+  .nav-links ul {
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .nav-links li {
+    margin: 15px 0;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+  }
+  
+  .nav-links a {
+    color: white;
+    font-size: 1.2rem;
+    padding: 12px 0;
+    width: 100%;
+    display: block;
+    letter-spacing: 1px;
+  }
+  
+  .nav-links a::after {
+    bottom: -8px;
+    width: 8px;
+    height: 8px;
+  }
+  
+  /* Mobile auth buttons - only show in mobile view */
+  .mobile-auth {
+    display: flex !important; /* Override the default hidden state */
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+    padding: 0 20px;
+    align-items: center;
+  }
+  
+  .mobile-auth .nav-login,
+  .mobile-auth .nav-register {
+    width: 100%;
+    max-width: 250px;
+    justify-content: center;
+    height: 45px;
+    font-size: 1rem;
+    border-radius: 50px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .mobile-auth .nav-login {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+  }
+  
+  .mobile-auth .nav-login:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-auth .nav-register {
+    background-color: white;
+    color: #0056b3;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .mobile-auth .nav-register:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.nav-bar.active .mobile-menu-toggle span:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.nav-bar.active .mobile-menu-toggle span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-bar.active .mobile-menu-toggle span:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0056b3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00a8e8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Base background -->
+  <rect width="100%" height="100%" fill="url(#bgGradient)" />
+  
+  <!-- Abstract cooling waves -->
+  <path d="M0,540 C320,400 480,680 800,540 C1120,400 1280,680 1600,540 C1760,470 1840,500 1920,540 L1920,1080 L0,1080 Z" 
+        fill="#ffffff" fill-opacity="0.05" />
+  <path d="M0,540 C320,480 480,600 800,540 C1120,480 1280,600 1600,540 C1760,510 1840,520 1920,540 L1920,1080 L0,1080 Z" 
+        fill="#ffffff" fill-opacity="0.07" />
+  
+  <!-- AC related design elements -->
+  <!-- Stylized snowflake patterns representing cooling -->
+  <g opacity="0.15" fill="#ffffff">
+    <!-- Large snowflake -->
+    <circle cx="1700" cy="200" r="80" />
+    <rect x="1620" y="190" width="160" height="20" rx="10" />
+    <rect x="1620" y="190" width="160" height="20" rx="10" transform="rotate(45 1700 200)" />
+    <rect x="1620" y="190" width="160" height="20" rx="10" transform="rotate(90 1700 200)" />
+    <rect x="1620" y="190" width="160" height="20" rx="10" transform="rotate(135 1700 200)" />
+    
+    <!-- Small snowflake patterns -->
+    <g opacity="0.6">
+      <circle cx="200" cy="300" r="30" />
+      <rect x="170" y="295" width="60" height="10" rx="5" />
+      <rect x="170" y="295" width="60" height="10" rx="5" transform="rotate(45 200 300)" />
+      <rect x="170" y="295" width="60" height="10" rx="5" transform="rotate(90 200 300)" />
+      <rect x="170" y="295" width="60" height="10" rx="5" transform="rotate(135 200 300)" />
+    </g>
+    
+    <g opacity="0.4">
+      <circle cx="1200" cy="150" r="20" />
+      <rect x="1180" y="145" width="40" height="10" rx="5" />
+      <rect x="1180" y="145" width="40" height="10" rx="5" transform="rotate(45 1200 150)" />
+      <rect x="1180" y="145" width="40" height="10" rx="5" transform="rotate(90 1200 150)" />
+      <rect x="1180" y="145" width="40" height="10" rx="5" transform="rotate(135 1200 150)" />
+    </g>
+    
+    <g opacity="0.3">
+      <circle cx="500" cy="100" r="15" />
+      <rect x="485" y="95" width="30" height="10" rx="5" />
+      <rect x="485" y="95" width="30" height="10" rx="5" transform="rotate(45 500 100)" />
+      <rect x="485" y="95" width="30" height="10" rx="5" transform="rotate(90 500 100)" />
+      <rect x="485" y="95" width="30" height="10" rx="5" transform="rotate(135 500 100)" />
+    </g>
+  </g>
+  
+  <!-- Circuit-like patterns representing AC systems -->
+  <g stroke="#ffffff" stroke-width="2" fill="none" opacity="0.1">
+    <path d="M100,800 L300,800 C350,800 350,750 400,750 L600,750" />
+    <path d="M150,850 L350,850 C400,850 400,900 450,900 L550,900" />
+    <circle cx="300" cy="800" r="5" fill="#ffffff" />
+    <circle cx="400" cy="750" r="5" fill="#ffffff" />
+    <circle cx="350" cy="850" r="5" fill="#ffffff" />
+    <circle cx="450" cy="900" r="5" fill="#ffffff" />
+    
+    <path d="M1300,700 L1500,700 C1550,700 1550,650 1600,650 L1800,650" />
+    <path d="M1350,750 L1550,750 C1600,750 1600,800 1650,800 L1750,800" />
+    <circle cx="1500" cy="700" r="5" fill="#ffffff" />
+    <circle cx="1600" cy="650" r="5" fill="#ffffff" />
+    <circle cx="1550" cy="750" r="5" fill="#ffffff" />
+    <circle cx="1650" cy="800" r="5" fill="#ffffff" />
+  </g>
+  
+  <!-- Abstract air flow lines -->
+  <g stroke="#ffffff" stroke-width="3" stroke-dasharray="15,15" opacity="0.1">
+    <path d="M0,350 Q480,250 960,350 Q1440,450 1920,350" />
+    <path d="M0,400 Q480,300 960,400 Q1440,500 1920,400" />
+  </g>
+</svg>
