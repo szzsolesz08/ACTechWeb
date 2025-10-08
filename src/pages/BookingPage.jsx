@@ -1,8 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import './BookingPage.css';
 
 function BookingPage() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const planParam = queryParams.get('plan');
+  
+  // Map plan to service type
+  const getServiceTypeFromPlan = (plan) => {
+    if (plan === 'basic' || plan === 'premium') {
+      return 'maintenance-plan';
+    }
+    return '';
+  };
+  
   const [bookingData, setBookingData] = useState({
-    serviceType: '',
+    serviceType: getServiceTypeFromPlan(planParam),
+    maintenancePlan: planParam || '',
     date: '',
     timeSlot: '',
     name: '',
@@ -28,37 +43,38 @@ function BookingPage() {
   const handleNextStep = (e) => {
     e.preventDefault();
     setBookingStep(bookingStep + 1);
-    window.scrollTo(0, 0);
   };
 
   const handlePrevStep = (e) => {
     e.preventDefault();
     setBookingStep(bookingStep - 1);
-    window.scrollTo(0, 0);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you would typically send the booking data to your backend
     console.log('Booking submitted:', bookingData);
     
-    // Generate a random reference number
     const reference = 'AC' + Math.floor(100000 + Math.random() * 900000);
     setBookingReference(reference);
     
-    // Show success message
     setBookingComplete(true);
-    window.scrollTo(0, 0);
   };
 
   const serviceTypes = [
     { id: 'installation', name: 'Installation' },
     { id: 'repair', name: 'Repair' },
     { id: 'maintenance', name: 'Maintenance' },
+    { id: 'maintenance-plan', name: 'Annual Maintenance Plan' },
     { id: 'inspection', name: 'Inspection' },
     { id: 'consultation', name: 'Consultation' }
   ];
+  
+  const maintenancePlans = [
+    { id: 'basic', name: 'Basic Plan - 86,000 Ft/year', description: '2 seasonal check-ups, priority scheduling, 10% discount on repairs' },
+    { id: 'premium', name: 'Premium Plan - 151,000 Ft/year', description: '4 quarterly check-ups, priority emergency service, 20% discount on repairs, free filter replacements' }
+  ];
 
+  // TODO: Elérhető időpontok az adott napra, pl.: 01.01. 8-10 3 darab foglalás (azaz minden szerelő foglalt)
   const timeSlots = [
     '8:00 AM - 10:00 AM',
     '10:00 AM - 12:00 PM',
@@ -67,6 +83,7 @@ function BookingPage() {
     '4:00 PM - 6:00 PM'
   ];
 
+  // TODO: Elérhető szerelők az adott időpontra
   const technicians = [
     { id: 'any', name: 'Any Available Technician' },
     { id: 'john', name: 'John Smith' },
@@ -74,12 +91,10 @@ function BookingPage() {
     { id: 'mike', name: 'Mike Davis' }
   ];
 
-  // Get tomorrow's date as min date for booking
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDate = tomorrow.toISOString().split('T')[0];
 
-  // Get date 3 months from now as max date
   const threeMonthsLater = new Date();
   threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
   const maxDate = threeMonthsLater.toISOString().split('T')[0];
@@ -106,6 +121,31 @@ function BookingPage() {
           </select>
         </div>
 
+        {bookingData.serviceType === 'maintenance-plan' && (
+          <div className="form-group">
+            <label>Select Maintenance Plan</label>
+            <div className="plan-selection-grid">
+              {maintenancePlans.map(plan => (
+                <label
+                  key={plan.id}
+                  className={`plan-selection-option ${bookingData.maintenancePlan === plan.id ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="maintenancePlan"
+                    value={plan.id}
+                    checked={bookingData.maintenancePlan === plan.id}
+                    onChange={handleChange}
+                    required
+                  />
+                  <div className="plan-name">{plan.name}</div>
+                  <div className="plan-description">{plan.description}</div>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="form-group">
           <label htmlFor="description">Describe your issue or requirements</label>
           <textarea
@@ -114,7 +154,7 @@ function BookingPage() {
             rows="4"
             value={bookingData.description}
             onChange={handleChange}
-            required
+            placeholder={bookingData.serviceType === 'maintenance-plan' ? 'Any additional information or special requirements...' : 'Describe your issue or requirements...'}
           ></textarea>
         </div>
 
@@ -145,45 +185,58 @@ function BookingPage() {
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="timeSlot">Preferred Time Slot</label>
-          <select
-            id="timeSlot"
-            name="timeSlot"
-            value={bookingData.timeSlot}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select a time slot</option>
-            {timeSlots.map((slot, index) => (
-              <option key={index} value={slot}>
-                {slot}
-              </option>
-            ))}
-          </select>
-        </div>
+        {bookingData.date && (
+          <div className="form-group">
+            <label>Preferred Time Slot</label>
+            <div className="time-slot-grid">
+              {timeSlots.map((slot, index) => (
+                <label
+                  key={index}
+                  className={`time-slot-option ${bookingData.timeSlot === slot ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="timeSlot"
+                    value={slot}
+                    checked={bookingData.timeSlot === slot}
+                    onChange={handleChange}
+                    required
+                  />
+                  {slot}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
 
-        <div className="form-group">
-          <label htmlFor="preferredTechnician">Preferred Technician (Optional)</label>
-          <select
-            id="preferredTechnician"
-            name="preferredTechnician"
-            value={bookingData.preferredTechnician}
-            onChange={handleChange}
-          >
-            {technicians.map(tech => (
-              <option key={tech.id} value={tech.id}>
-                {tech.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {bookingData.date && bookingData.timeSlot && (
+          <div className="form-group">
+            <label>Preferred Technician (Optional)</label>
+            <div className="technician-grid">
+              {technicians.map(tech => (
+                <label
+                  key={tech.id}
+                  className={`technician-option ${bookingData.preferredTechnician === tech.id ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="preferredTechnician"
+                    value={tech.id}
+                    checked={bookingData.preferredTechnician === tech.id}
+                    onChange={handleChange}
+                  />
+                  {tech.name}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="form-actions">
           <button type="button" className="btn btn-secondary" onClick={handlePrevStep}>
             Previous Step
           </button>
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-primary" disabled={!bookingData.date || !bookingData.timeSlot}>
             Next Step
           </button>
         </div>
@@ -292,19 +345,17 @@ function BookingPage() {
       {!bookingComplete ? (
         <div className="booking-container">
           <div className="booking-progress">
-            <div className={`progress-step ${bookingStep >= 1 ? 'active' : ''}`}>
-              <div className="step-number">1</div>
-              <div className="step-label">Service</div>
+            <div className={`progress-step ${bookingStep > 1 ? 'completed' : bookingStep === 1 ? 'active' : ''}`}>
+              <div className="progress-circle">1</div>
+              <div className="progress-label">Service</div>
             </div>
-            <div className="progress-bar"></div>
-            <div className={`progress-step ${bookingStep >= 2 ? 'active' : ''}`}>
-              <div className="step-number">2</div>
-              <div className="step-label">Date & Time</div>
+            <div className={`progress-step ${bookingStep > 2 ? 'completed' : bookingStep === 2 ? 'active' : ''}`}>
+              <div className="progress-circle">2</div>
+              <div className="progress-label">Date & Time</div>
             </div>
-            <div className="progress-bar"></div>
-            <div className={`progress-step ${bookingStep >= 3 ? 'active' : ''}`}>
-              <div className="step-number">3</div>
-              <div className="step-label">Details</div>
+            <div className={`progress-step ${bookingStep === 3 ? 'active' : ''}`}>
+              <div className="progress-circle">3</div>
+              <div className="progress-label">Details</div>
             </div>
           </div>
           

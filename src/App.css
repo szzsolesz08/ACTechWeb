@@ -32,9 +32,7 @@
 
 .app-main {
   flex: 1;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 0;
   width: 100%;
 }
 
@@ -44,4 +42,35 @@
   text-align: center;
   padding: 1rem;
   margin-top: auto;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .app-main {
+    padding: 0rem;
+  }
+  
+  .app-header {
+    padding: 0rem 0rem;
+  }
+  
+  .app-footer {
+    padding: 0rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-main {
+    padding: 0rem;
+  }
+  
+  .app-header {
+    padding: 0rem 0rem;
+  }
+  
+  .app-footer {
+    padding: 0rem;
+    font-size: 0.85rem;
+  }
 }

@@ -255,6 +255,10 @@ body.menu-open {
     width: 8px;
     height: 8px;
   }
+
+  .nav-booking {
+    padding: 10px 0px !important;
+  }
   
   /* Mobile auth buttons - only show in mobile view */
   .mobile-auth {

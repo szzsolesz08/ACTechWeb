@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './AuthPage.css';
 
 function LoginPage() {
   const [loginData, setLoginData] = useState({
