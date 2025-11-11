@@ -4,6 +4,9 @@ import authService from '../services/authService';
 import bookingService from '../services/bookingService';
 import userService from '../services/userService';
 import './AdminBookingsPage.css';
+import { generateInvoice } from '../utils/invoiceGenerator';
+import units from '../utils/Units';
+import prices from '../utils/Prices';
 
 function AdminBookingsPage() {
   const navigate = useNavigate();
@@ -13,6 +16,8 @@ function AdminBookingsPage() {
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     const user = authService.getCurrentUser();
@@ -63,8 +68,18 @@ function AdminBookingsPage() {
   };
 
   const getFilteredBookings = () => {
-    if (filter === 'all') return bookings;
-    return bookings.filter(b => b.status === filter);
+    let filtered = bookings;
+    
+    filtered = filtered.filter(b => {
+      const bookingDate = new Date(b.date);
+      return bookingDate.getMonth() === selectedMonth && bookingDate.getFullYear() === selectedYear;
+    });
+    
+    if (filter !== 'all') {
+      filtered = filtered.filter(b => b.status === filter);
+    }
+    
+    return filtered;
   };
 
   const getStatusBadgeClass = (status) => {
@@ -86,19 +101,61 @@ function AdminBookingsPage() {
     });
   };
 
+  const serviceTypes = [
+    { id: 1, value: 'installation', name: 'Installation' },
+    { id: 2, value: 'repair', name: 'Repair' },
+    { id: 3, value: 'maintenance', name: 'Maintenance' },
+    { id: 4, value: 'inspection', name: 'Inspection' },
+    { id: 5, value: 'consultation', name: 'Consultation' },
+    { id: 6, value: 'maintenance-plan', name: 'Annual Maintenance Plan' },
+  ];
+
+  const maintenancePlans = [
+    { id: 'basic', price: 86000, name: 'Basic Plan - 86,000 Ft/year' },
+    { id: 'premium', price: 151000, name: 'Premium Plan - 151,000 Ft/year' }
+  ];
+
+  const handleGenerateInvoice = (booking) => {
+    const bookingData = {
+      serviceType: serviceTypes.find(s => s.value === booking.serviceType)?.id || '',
+      unit: booking.unit || '',
+      maintenancePlan: booking.maintenancePlan || '',
+      date: booking.date,
+      timeSlot: booking.timeSlot,
+      name: booking.customerInfo.name,
+      email: booking.customerInfo.email,
+      phone: booking.customerInfo.phone,
+      address: booking.customerInfo.address,
+      description: booking.description,
+      price: booking.price || 0
+    };
+    
+    generateInvoice(bookingData, booking.referenceNumber, serviceTypes, units, prices, maintenancePlans);
+  };
+
   if (loading) {
     return <div className="loading">Loading bookings...</div>;
   }
 
   const filteredBookings = getFilteredBookings();
+  
+  const monthBookings = bookings.filter(b => {
+    const bookingDate = new Date(b.date);
+    return bookingDate.getMonth() === selectedMonth && bookingDate.getFullYear() === selectedYear;
+  });
+  
   const stats = {
-    total: bookings.length,
-    pending: bookings.filter(b => b.status === 'pending').length,
-    confirmed: bookings.filter(b => b.status === 'confirmed').length,
-    inProgress: bookings.filter(b => b.status === 'in-progress').length,
-    completed: bookings.filter(b => b.status === 'completed').length,
-    cancelled: bookings.filter(b => b.status === 'cancelled').length
+    total: monthBookings.length,
+    pending: monthBookings.filter(b => b.status === 'pending').length,
+    confirmed: monthBookings.filter(b => b.status === 'confirmed').length,
+    inProgress: monthBookings.filter(b => b.status === 'in-progress').length,
+    completed: monthBookings.filter(b => b.status === 'completed').length,
+    cancelled: monthBookings.filter(b => b.status === 'cancelled').length
   };
+  
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const currentYear = new Date().getFullYear();
+  const years = [currentYear - 1, currentYear, currentYear + 1];
 
   return (
     <div className="admin-bookings-page">
@@ -108,6 +165,29 @@ function AdminBookingsPage() {
       </div>
 
       {error && <div className="error-message">{error}</div>}
+
+      {/* Month and Year Selector */}
+      <div className="month-year-selector">
+        <div className="selector-group">
+          <label>Month:</label>
+          <select value={selectedMonth} onChange={(e) => setSelectedMonth(parseInt(e.target.value))}>
+            {monthNames.map((month, index) => (
+              <option key={index} value={index}>{month}</option>
+            ))}
+          </select>
+        </div>
+        <div className="selector-group">
+          <label>Year:</label>
+          <select value={selectedYear} onChange={(e) => setSelectedYear(parseInt(e.target.value))}>
+            {years.map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
+        <div className="selected-period">
+          Showing bookings for <strong>{monthNames[selectedMonth]} {selectedYear}</strong>
+        </div>
+      </div>
 
       <div className="stats-grid">
         <div className="stat-card">
@@ -182,6 +262,7 @@ function AdminBookingsPage() {
               <th>Reference</th>
               <th>Customer</th>
               <th>Service Type</th>
+              <th>Price</th>
               <th>Date</th>
               <th>Time</th>
               <th>Status</th>
@@ -192,7 +273,7 @@ function AdminBookingsPage() {
           <tbody>
             {filteredBookings.length === 0 ? (
               <tr>
-                <td colSpan="8" className="no-bookings">
+                <td colSpan="9" className="no-bookings">
                   No bookings found
                 </td>
               </tr>
@@ -212,6 +293,14 @@ function AdminBookingsPage() {
                     {booking.maintenancePlan && (
                       <span className="plan-badge">{booking.maintenancePlan}</span>
                     )}
+                    {booking.unit && (
+                      <div className="unit-info">
+                        Unit: {units.find(u => u.id === booking.unit)?.name || `#${booking.unit}`}
+                      </div>
+                    )}
+                  </td>
+                  <td className="price-cell">
+                    {booking.price ? `${booking.price.toLocaleString('hu-HU')} Ft` : 'N/A'}
                   </td>
                   <td>{formatDate(booking.date)}</td>
                   <td>{booking.timeSlot}</td>
@@ -243,12 +332,21 @@ function AdminBookingsPage() {
                     </select>
                   </td>
                   <td>
-                    <button 
-                      className="btn-view"
-                      onClick={() => setSelectedBooking(booking)}
-                    >
-                      View Details
-                    </button>
+                    <div className="action-buttons">
+                      <button 
+                        className="btn-view"
+                        onClick={() => setSelectedBooking(booking)}
+                      >
+                        View
+                      </button>
+                      <button 
+                        className="btn-invoice"
+                        onClick={() => handleGenerateInvoice(booking)}
+                        title="Generate Invoice"
+                      >
+                        📄
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -289,6 +387,24 @@ function AdminBookingsPage() {
                 <label>Service Type:</label>
                 <p className="capitalize">{selectedBooking.serviceType.replace('-', ' ')}</p>
               </div>
+              {selectedBooking.maintenancePlan && (
+                <div className="detail-group">
+                  <label>Maintenance Plan:</label>
+                  <p className="capitalize">{selectedBooking.maintenancePlan}</p>
+                </div>
+              )}
+              {selectedBooking.unit && (
+                <div className="detail-group">
+                  <label>AC Unit:</label>
+                  <p>{units.find(u => u.id === selectedBooking.unit)?.name || `Unit #${selectedBooking.unit}`}</p>
+                </div>
+              )}
+              {selectedBooking.price && (
+                <div className="detail-group">
+                  <label>Price:</label>
+                  <p className="price-highlight">{selectedBooking.price.toLocaleString('hu-HU')} Ft</p>
+                </div>
+              )}
               <div className="detail-group">
                 <label>Date & Time:</label>
                 <p>{formatDate(selectedBooking.date)} - {selectedBooking.timeSlot}</p>
@@ -317,6 +433,20 @@ function AdminBookingsPage() {
                   <p>{selectedBooking.notes}</p>
                 </div>
               )}
+            </div>
+            <div className="modal-footer">
+              <button 
+                className="btn btn-secondary"
+                onClick={() => handleGenerateInvoice(selectedBooking)}
+              >
+                Download Invoice (PDF)
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={() => setSelectedBooking(null)}
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

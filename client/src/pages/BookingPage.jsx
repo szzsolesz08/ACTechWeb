@@ -4,6 +4,9 @@ import bookingService from '../services/bookingService';
 import userService from '../services/userService';
 import authService from '../services/authService';
 import './BookingPage.css';
+import prices from '../utils/Prices';
+import units from '../utils/Units';
+import { generateInvoice } from '../utils/invoiceGenerator';
 
 function BookingPage() {
   const location = useLocation();
@@ -12,7 +15,7 @@ function BookingPage() {
   
   const getServiceTypeFromPlan = (plan) => {
     if (plan === 'basic' || plan === 'premium') {
-      return 'maintenance-plan';
+      return 6;
     }
     return '';
   };
@@ -22,6 +25,7 @@ function BookingPage() {
   const [bookingData, setBookingData] = useState({
     serviceType: getServiceTypeFromPlan(planParam),
     maintenancePlan: planParam || '',
+    unit: '',
     date: '',
     timeSlot: '',
     name: currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : '',
@@ -29,7 +33,8 @@ function BookingPage() {
     phone: currentUser?.phone || '',
     address: currentUser?.address || '',
     description: '',
-    preferredTechnician: 'any'
+    preferredTechnician: 'any',
+    price: 0
   });
 
   const [bookingStep, setBookingStep] = useState(1);
@@ -43,12 +48,49 @@ function BookingPage() {
   const [loadingTimeSlots, setLoadingTimeSlots] = useState(false);
   const [loadingTechnicians, setLoadingTechnicians] = useState(false);
 
+  const calculatePrice = (serviceType, unit, maintenancePlan) => {
+    let price = 0;
+    
+    if (serviceType == 1 && unit) {
+      const selectedUnit = units.find(u => u.id == unit);
+      const installationService = prices.find(p => p.id === 1);
+      if (selectedUnit) price += selectedUnit.price;
+      if (installationService) price += installationService.price;
+    }
+    else if (serviceType >= 2 && serviceType <= 5) {
+      const service = prices.find(p => p.id == serviceType);
+      if (service) price = service.price;
+    }
+    else if (serviceType == 6 && maintenancePlan) {
+      const plan = maintenancePlans.find(p => p.id === maintenancePlan);
+      if (plan) price = plan.price;
+    }
+    
+    return price;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setBookingData({
+    
+    const updatedData = {
       ...bookingData,
       [name]: value
-    });
+    };
+    
+    if (name === 'serviceType' || name === 'unit' || name === 'maintenancePlan') {
+      updatedData.price = calculatePrice(
+        name === 'serviceType' ? value : bookingData.serviceType,
+        name === 'unit' ? value : bookingData.unit,
+        name === 'maintenancePlan' ? value : bookingData.maintenancePlan
+      );
+      
+      if (name === 'serviceType') {
+        updatedData.unit = '';
+        updatedData.maintenancePlan = '';
+      }
+    }
+    
+    setBookingData(updatedData);
 
     if (name === 'date' && value) {
       fetchAvailableTimeSlots(value);
@@ -131,7 +173,14 @@ function BookingPage() {
     }
     
     try {
-      const response = await bookingService.createBooking(bookingData);
+      const serviceTypeValue = serviceTypes.find(s => s.id == bookingData.serviceType)?.value || '';
+      
+      const bookingPayload = {
+        ...bookingData,
+        serviceType: serviceTypeValue
+      };
+      
+      const response = await bookingService.createBooking(bookingPayload);
       
       setBookingReference(response.booking.referenceNumber);
       setBookingComplete(true);
@@ -150,17 +199,17 @@ function BookingPage() {
   };
 
   const serviceTypes = [
-    { id: 'installation', name: 'Installation' },
-    { id: 'repair', name: 'Repair' },
-    { id: 'maintenance', name: 'Maintenance' },
-    { id: 'maintenance-plan', name: 'Annual Maintenance Plan' },
-    { id: 'inspection', name: 'Inspection' },
-    { id: 'consultation', name: 'Consultation' }
+    { id: 1, value: 'installation', name: 'Installation', description: 'AC unit + installation service' },
+    { id: 2, value: 'repair', name: 'Repair', description: 'Repair services based on complexity' },
+    { id: 3, value: 'maintenance', name: 'Maintenance', description: 'Seasonal tune-up and preventive maintenance' },
+    { id: 4, value: 'inspection', name: 'Inspection', description: 'Inspection and diagnosis of AC issues' },
+    { id: 5, value: 'consultation', name: 'Consultation', description: 'Consultation and advice on AC issues' },
+    { id: 6, value: 'maintenance-plan', name: 'Annual Maintenance Plan', description: 'Choose from Basic or Premium plans' },
   ];
   
   const maintenancePlans = [
-    { id: 'basic', name: 'Basic Plan - 86,000 Ft/year', description: '2 seasonal check-ups, priority scheduling, 10% discount on repairs' },
-    { id: 'premium', name: 'Premium Plan - 151,000 Ft/year', description: '4 quarterly check-ups, priority emergency service, 20% discount on repairs, free filter replacements' }
+    { id: 'basic', price: 86000, name: 'Basic Plan - 86,000 Ft/year', description: '2 seasonal check-ups, priority scheduling, 10% discount on repairs' },
+    { id: 'premium', price: 151000, name: 'Premium Plan - 151,000 Ft/year', description: '4 quarterly check-ups, priority emergency service, 20% discount on repairs, free filter replacements' }
   ];
 
   const timeSlots = [
@@ -222,7 +271,27 @@ function BookingPage() {
           </select>
         </div>
 
-        {bookingData.serviceType === 'maintenance-plan' && (
+        {bookingData.serviceType == 1 && (
+          <div className="form-group">
+            <label htmlFor="unit">Select AC Unit</label>
+            <select
+              id="unit"
+              name="unit"
+              value={bookingData.unit}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select an AC unit</option>
+              {units.map(unit => (
+                <option key={unit.id} value={unit.id}>
+                  {unit.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {bookingData.serviceType == 6 && (
           <div className="form-group">
             <label>Select Maintenance Plan</label>
             <div className="plan-selection-grid">
@@ -255,9 +324,22 @@ function BookingPage() {
             rows="4"
             value={bookingData.description}
             onChange={handleChange}
-            placeholder={bookingData.serviceType === 'maintenance-plan' ? 'Any additional information or special requirements...' : 'Describe your issue or requirements...'}
+            placeholder={bookingData.serviceType == 6 ? 'Any additional information or special requirements...' : 'Describe your issue or requirements...'}
           ></textarea>
         </div>
+
+        {bookingData.price > 0 && (
+          <div className="price-summary">
+            <h4>Estimated Price</h4>
+            <p className="total-price">{bookingData.price.toLocaleString('hu-HU')} Ft</p>
+            {bookingData.serviceType == 1 && bookingData.unit && (
+              <div className="price-breakdown">
+                <p>• AC Unit: {units.find(u => u.id == bookingData.unit)?.price.toLocaleString('hu-HU')} Ft</p>
+                <p>• Installation Service: {prices.find(p => p.id === 1)?.price.toLocaleString('hu-HU')} Ft</p>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="form-actions">
           <button type="submit" className="btn btn-primary">
@@ -437,6 +519,10 @@ function BookingPage() {
     </div>
   );
 
+  const handleGenerateInvoice = () => {
+    generateInvoice(bookingData, bookingReference, serviceTypes, units, prices, maintenancePlans);
+  };
+
   const renderBookingConfirmation = () => (
     <div className="booking-confirmation">
       <div className="confirmation-icon">✓</div>
@@ -450,16 +536,22 @@ function BookingPage() {
       <div className="booking-summary">
         <h4>Booking Details:</h4>
         <ul>
-          <li><strong>Service:</strong> {serviceTypes.find(s => s.id === bookingData.serviceType)?.name}</li>
+          <li><strong>Service:</strong> {serviceTypes.find(s => s.id == bookingData.serviceType)?.name}</li>
+          {bookingData.price > 0 && <li><strong>Price:</strong> {bookingData.price.toLocaleString('hu-HU')} Ft</li>}
           <li><strong>Date:</strong> {bookingData.date}</li>
           <li><strong>Time:</strong> {bookingData.timeSlot}</li>
         </ul>
       </div>
       <p>You will receive a confirmation email shortly with all the details.</p>
       <p>Our team will contact you 24 hours before your appointment to confirm.</p>
-      <button className="btn btn-primary" onClick={() => window.location.href = "/"}>
-        Return to Home
-      </button>
+      <div className="confirmation-actions">
+        <button className="btn btn-secondary" onClick={handleGenerateInvoice}>
+          Download Invoice (PDF)
+        </button>
+        <button className="btn btn-primary" onClick={() => window.location.href = "/"}>
+          Return to Home
+        </button>
+      </div>
     </div>
   );
 

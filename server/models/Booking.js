@@ -20,6 +20,15 @@ const bookingSchema = new mongoose.Schema({
     enum: ['basic', 'premium', ''],
     default: ''
   },
+  unit: {
+    type: Number,
+    required: false
+  },
+  price: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   date: {
     type: Date,
     required: [true, 'Date is required']
@@ -80,7 +89,6 @@ const bookingSchema = new mongoose.Schema({
   }
 });
 
-// Generate reference number before saving
 bookingSchema.pre('save', function(next) {
   if (!this.referenceNumber) {
     this.referenceNumber = 'AC' + Math.floor(100000 + Math.random() * 900000);

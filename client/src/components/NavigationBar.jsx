@@ -81,7 +81,7 @@ function NavigationBar() {
         
         <div className={`nav-links ${mobileMenuOpen ? 'active' : ''}`}>
           <ul>
-            {currentUser?.role === 'customer' && (
+            {(currentUser?.role !== 'admin' && currentUser?.role !== 'technician') && (
               <>
                 <li><Link to="/" onClick={closeMobileMenu}>Home</Link></li>
                 <li><Link to="/services" onClick={closeMobileMenu}>Services</Link></li>
@@ -91,12 +91,18 @@ function NavigationBar() {
                 <li><Link to="/booking" onClick={closeMobileMenu} className="nav-booking">Book Now</Link></li>
               </>
             )}
+            {currentUser?.role === 'admin' && (
+              <ul>
+                <li><Link to="/admin/dashboard" onClick={closeMobileMenu}>Dashboard</Link></li>
+                <li><Link to="/admin/bookings" onClick={closeMobileMenu}>Manage Bookings</Link></li>
+              </ul>
+            )}
           </ul>
           
           <div className="mobile-auth">
             {isAuthenticated ? (
               <>
-                {currentUser?.role === 'customer' && (
+                {currentUser?.role === 'customer' || currentUser?.role === 'technician' && (
                   <Link to="/profile" className="nav-profile" onClick={closeMobileMenu}>My Profile</Link>
                 )}
                 <button className="nav-logout" onClick={handleLogout}>
@@ -118,6 +124,12 @@ function NavigationBar() {
               <span className="nav-user-name">Hello, {currentUser?.firstName}</span>
               {currentUser?.role === 'customer' && (
                 <Link to="/profile" className="nav-profile">My Profile</Link>
+              )}
+              {currentUser?.role === 'admin' && (
+                <Link to="/admin/dashboard" className="nav-profile">Dashboard</Link>
+              )}
+              {currentUser?.role === 'technician' && (
+                <Link to="/technician/bookings" className="nav-profile">My Bookings</Link>
               )}
               <button className="nav-logout" onClick={handleLogout}>Logout</button>
             </>
