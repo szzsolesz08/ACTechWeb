@@ -8,7 +8,9 @@
     "dev": "nodemon server.js",
     "seed": "node seeders/seed.js",
     "seed:users": "node seeders/userSeeder.js",
-    "seed:bookings": "node seeders/bookingSeeder.js"
+    "seed:bookings": "node seeders/bookingSeeder.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "keywords": [
     "express",
@@ -28,6 +30,10 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.1.0",
-    "nodemon": "^3.0.1"
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.6.2"
   }
 }

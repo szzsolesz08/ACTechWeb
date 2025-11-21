@@ -28,7 +28,9 @@
 ## Starting MongoDB
 
 ### If installed as a Service (recommended):
+
 MongoDB starts automatically. You can manage it via:
+
 ```bash
 # Check status
 net start MongoDB
@@ -41,7 +43,9 @@ net start MongoDB
 ```
 
 ### If NOT installed as a Service:
+
 1. Create data directory:
+
    ```bash
    mkdir C:\data\db
    ```
@@ -55,6 +59,7 @@ net start MongoDB
 ## Configure Your Application
 
 Your `.env` file should already have the correct local connection:
+
 ```env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/actechweb
@@ -65,6 +70,7 @@ NODE_ENV=development
 ## Test the Connection
 
 1. Start your server:
+
    ```bash
    npm run dev
    ```
@@ -88,15 +94,18 @@ MongoDB Compass is a GUI tool to view and manage your database:
 ## Troubleshooting
 
 ### "MongoDB not found" error:
+
 - Make sure MongoDB is installed
 - Add MongoDB to your PATH environment variable
 - Default location: `C:\Program Files\MongoDB\Server\7.0\bin`
 
 ### "Connection refused" error:
+
 - Check if MongoDB service is running: `net start MongoDB`
 - Or start manually: `mongod`
 
 ### Port 27017 already in use:
+
 - Another MongoDB instance is running
 - Stop it: `net stop MongoDB`
 - Or use a different port in your connection string
@@ -104,6 +113,7 @@ MongoDB Compass is a GUI tool to view and manage your database:
 ## Database Management
 
 ### View Data:
+
 - Use MongoDB Compass (GUI)
 - Or use MongoDB Shell:
   ```bash
@@ -114,6 +124,7 @@ MongoDB Compass is a GUI tool to view and manage your database:
   ```
 
 ### Clear Database:
+
 ```bash
 mongosh
 use actechweb
@@ -132,6 +143,7 @@ db.dropDatabase()
 ## Production Note
 
 For production deployment, consider:
+
 - MongoDB Atlas (cloud-hosted)
 - Or a dedicated MongoDB server
 - Never use localhost in production!

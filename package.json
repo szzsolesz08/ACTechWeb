@@ -1,0 +1,35 @@
+{
+  "name": "actechweb",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "AC Technician Services - Full Stack Application",
+  "scripts": {
+    "prepare": "husky",
+    "client": "cd client && npm run dev",
+    "server": "cd server && npm run dev",
+    "install:client": "cd client && npm install",
+    "install:server": "cd server && npm install",
+    "install:all": "npm run install:client && npm run install:server",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "eslint": "^9.39.1",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.6.2"
+  },
+  "lint-staged": {
+    "client/**/*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "server/**/*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}

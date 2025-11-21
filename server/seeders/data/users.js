@@ -8,7 +8,7 @@ module.exports = [
     address: 'Andrássy út 1',
     city: 'Budapest',
     zipCode: '1061',
-    role: 'customer'
+    role: 'customer',
   },
   {
     firstName: 'Jane',
@@ -19,7 +19,7 @@ module.exports = [
     address: 'Váci utca 15',
     city: 'Budapest',
     zipCode: '1052',
-    role: 'customer'
+    role: 'customer',
   },
   {
     firstName: 'Peter',
@@ -30,7 +30,7 @@ module.exports = [
     address: 'Rákóczi út 67',
     city: 'Pécs',
     zipCode: '7621',
-    role: 'customer'
+    role: 'customer',
   },
   {
     firstName: 'Mike',
@@ -41,7 +41,7 @@ module.exports = [
     address: 'Kossuth Lajos utca 23',
     city: 'Debrecen',
     zipCode: '4024',
-    role: 'technician'
+    role: 'technician',
   },
   {
     firstName: 'Sarah',
@@ -52,7 +52,7 @@ module.exports = [
     address: 'Dózsa György út 45',
     city: 'Szeged',
     zipCode: '6720',
-    role: 'technician'
+    role: 'technician',
   },
   {
     firstName: 'David',
@@ -63,7 +63,7 @@ module.exports = [
     address: 'Petőfi Sándor utca 89',
     city: 'Győr',
     zipCode: '9021',
-    role: 'technician'
+    role: 'technician',
   },
   {
     firstName: 'Admin',
@@ -74,6 +74,6 @@ module.exports = [
     address: 'Fő utca 100',
     city: 'Budapest',
     zipCode: '1011',
-    role: 'admin'
-  }
-];
+    role: 'admin',
+  },
+]

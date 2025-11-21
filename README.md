@@ -18,12 +18,14 @@ ACTechWeb/
 ## 🚀 Tech Stack
 
 ### Frontend
+
 - React
 - React Router
 - Axios
 - Vite
 
 ### Backend
+
 - Node.js
 - Express
 - MongoDB
@@ -33,6 +35,7 @@ ACTechWeb/
 ## ⚡ Quick Start
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - MongoDB (local)
 - npm or yarn
@@ -40,12 +43,14 @@ ACTechWeb/
 ### Installation
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/szzsolesz08/ACTechWeb.git
    cd ACTechWeb
    ```
 
 2. **Set up the server:**
+
    ```bash
    cd server
    npm install
@@ -55,6 +60,7 @@ ACTechWeb/
    ```
 
 3. **Set up the client:**
+
    ```bash
    cd client
    npm install
@@ -69,12 +75,14 @@ ACTechWeb/
 ## 📚 Documentation
 
 For detailed setup and usage instructions, see:
+
 - [Client Documentation](./client/README.md)
 - [Server Documentation](./server/README.md)
 
 ## 🎯 Features
 
 ### For Customers
+
 - Browse AC services
 - Book appointments with date/time selection
 - Choose preferred technician
@@ -82,11 +90,13 @@ For detailed setup and usage instructions, see:
 - Manage profile
 
 ### For Technicians
+
 - View assigned bookings
 - Update job status
 - Manage schedule
 
 ### For Administrators
+
 - View all bookings
 - Assign technicians
 - Manage booking statuses
@@ -103,14 +113,17 @@ For detailed setup and usage instructions, see:
 After seeding the database, you can use these accounts:
 
 **Admin:**
+
 - Email: `admin@actechweb.com`
 - Password: `Admin123!`
 
 **Customer:**
+
 - Email: `john.doe@example.com`
 - Password: `Password123!`
 
 **Technician:**
+
 - Email: `mike.johnson@example.com`
 - Password: `Password123!`
 
@@ -119,12 +132,14 @@ After seeding the database, you can use these accounts:
 ### Running Both Services
 
 **Terminal 1 (Server):**
+
 ```bash
 cd server
 npm run dev
 ```
 
 **Terminal 2 (Client):**
+
 ```bash
 cd client
 npm run dev
@@ -133,12 +148,14 @@ npm run dev
 ### Environment Variables
 
 Both client and server require `.env` files. See individual README files for details:
+
 - Client: `VITE_API_URL`
 - Server: `PORT`, `MONGODB_URI`, `JWT_SECRET`, `NODE_ENV`
 
 ## 📦 Available Scripts
 
 ### Server
+
 ```bash
 npm start          # Start production server
 npm run dev        # Start development server
@@ -146,6 +163,7 @@ npm run seed       # Seed database with sample data
 ```
 
 ### Client
+
 ```bash
 npm run dev        # Start development server
 npm run build      # Build for production
@@ -155,6 +173,7 @@ npm run preview    # Preview production build
 ## 🚀 Deployment
 
 1. **Build the client:**
+
    ```bash
    cd client
    npm run build

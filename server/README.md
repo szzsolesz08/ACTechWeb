@@ -22,39 +22,46 @@ Backend API for AC Technician Services booking platform built with Node.js, Expr
 ## 🛠️ Installation
 
 1. **Navigate to the server directory:**
+
    ```bash
    cd server
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Configure environment variables:**
-   
+
    Create a `.env` file in the server root directory:
+
    ```env
    PORT=5000
    MONGODB_URI=mongodb://localhost:27017/actechweb
    JWT_SECRET=your-super-secret-jwt-key-change-in-production
    NODE_ENV=development
    ```
-   
+
    **Note:** The `.env` file is gitignored for security. Never commit it to version control.
 
 4. **Start MongoDB (if running locally):**
+
    ```bash
    mongod
    ```
 
 5. **Seed the database (optional but recommended):**
+
    ```bash
    npm run seed
    ```
+
    This will create sample users and bookings for testing.
 
 6. **Start the server:**
+
    ```bash
    # Development mode with auto-restart
    npm run dev
@@ -68,33 +75,37 @@ The server will start on `http://localhost:5000`
 ## 📡 API Endpoints
 
 ### Authentication (`/api/auth`)
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/register` | Register new user | No |
-| POST | `/login` | Login user | No |
+
+| Method | Endpoint    | Description       | Auth Required |
+| ------ | ----------- | ----------------- | ------------- |
+| POST   | `/register` | Register new user | No            |
+| POST   | `/login`    | Login user        | No            |
 
 ### Bookings (`/api/bookings`)
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/` | Create new booking | Yes |
-| GET | `/my-bookings` | Get user's bookings | Yes |
-| GET | `/available-time-slots` | Get available time slots for a date | Yes |
-| GET | `/available-technicians` | Get available technicians | Yes |
-| GET | `/:id` | Get booking by ID | Yes |
-| PATCH | `/:id/status` | Update booking status | Yes (Admin/Technician) |
-| PATCH | `/:id/assign` | Assign technician to booking | Yes (Admin) |
+
+| Method | Endpoint                 | Description                         | Auth Required          |
+| ------ | ------------------------ | ----------------------------------- | ---------------------- |
+| POST   | `/`                      | Create new booking                  | Yes                    |
+| GET    | `/my-bookings`           | Get user's bookings                 | Yes                    |
+| GET    | `/available-time-slots`  | Get available time slots for a date | Yes                    |
+| GET    | `/available-technicians` | Get available technicians           | Yes                    |
+| GET    | `/:id`                   | Get booking by ID                   | Yes                    |
+| PATCH  | `/:id/status`            | Update booking status               | Yes (Admin/Technician) |
+| PATCH  | `/:id/assign`            | Assign technician to booking        | Yes (Admin)            |
 
 ### Users (`/api/users`)
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/profile` | Get user profile | Yes |
-| PUT | `/profile` | Update user profile | Yes |
-| GET | `/technicians` | Get all technicians | No |
+
+| Method | Endpoint       | Description         | Auth Required |
+| ------ | -------------- | ------------------- | ------------- |
+| GET    | `/profile`     | Get user profile    | Yes           |
+| PUT    | `/profile`     | Update user profile | Yes           |
+| GET    | `/technicians` | Get all technicians | No            |
 
 ### Health Check
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/health` | Server health check | No |
+
+| Method | Endpoint      | Description         | Auth Required |
+| ------ | ------------- | ------------------- | ------------- |
+| GET    | `/api/health` | Server health check | No            |
 
 ## 📁 Project Structure
 
@@ -125,6 +136,7 @@ server/
 ## 📊 Database Models
 
 ### User Model
+
 ```javascript
 {
   firstName: String,
@@ -142,6 +154,7 @@ server/
 ```
 
 ### Booking Model
+
 ```javascript
 {
   user: ObjectId,           // Reference to User
@@ -199,42 +212,48 @@ npm run seed:bookings
 The project includes seeding scripts to populate the database with sample data:
 
 ### Seed All Data
+
 ```bash
 npm run seed
 ```
 
 This creates:
+
 - **7 Users** (3 customers, 3 technicians, 1 admin)
 - **12 Bookings** with various statuses
 
 ### Sample Credentials
 
 **Admin:**
+
 - Email: `admin@actechweb.com`
 - Password: `Admin123!`
 
 **Customer:**
+
 - Email: `john.doe@example.com`
 - Password: `Password123!`
 
 **Technician:**
+
 - Email: `mike.johnson@example.com`
 - Password: `Password123!`
 
 ## 🌐 Environment Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `PORT` | Server port | `5000` |
+| Variable      | Description               | Example                               |
+| ------------- | ------------------------- | ------------------------------------- |
+| `PORT`        | Server port               | `5000`                                |
 | `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/actechweb` |
-| `JWT_SECRET` | Secret key for JWT tokens | `your-super-secret-key` |
-| `NODE_ENV` | Environment mode | `development` or `production` |
+| `JWT_SECRET`  | Secret key for JWT tokens | `your-super-secret-key`               |
+| `NODE_ENV`    | Environment mode          | `development` or `production`         |
 
 **Security Note:** The `.env` file is excluded from Git via `.gitignore`. Never commit sensitive credentials.
 
 ## 🚀 Production Deployment
 
 1. **Set production environment variables:**
+
    ```env
    NODE_ENV=production
    JWT_SECRET=<strong-random-secret>
@@ -245,6 +264,7 @@ This creates:
 2. **Use MongoDB Atlas** for production database
 
 3. **Use PM2** for process management:
+
    ```bash
    npm install -g pm2
    pm2 start server.js --name actechweb-server
@@ -259,19 +279,23 @@ This creates:
 ## 🐛 Common Issues
 
 ### MongoDB Connection Error
+
 - Ensure MongoDB is running: `mongod`
 - Check `MONGODB_URI` in `.env`
 - For Atlas, check network access and credentials
 
 ### JWT Authentication Error
+
 - Verify `JWT_SECRET` is set in `.env`
 - Check if token is being sent in Authorization header
 
 ### Port Already in Use
+
 - Change `PORT` in `.env` to an available port
 - Kill the process using the port: `npx kill-port 5000`
 
 ### Seeding Errors
+
 - Ensure MongoDB is running
 - Check database connection string
 - Clear existing data if needed
@@ -279,6 +303,7 @@ This creates:
 ## 📝 API Response Format
 
 ### Success Response
+
 ```json
 {
   "message": "Success message",
@@ -287,6 +312,7 @@ This creates:
 ```
 
 ### Error Response
+
 ```json
 {
   "error": "Error message",
