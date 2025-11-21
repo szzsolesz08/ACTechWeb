@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
 
@@ -16,27 +16,21 @@ import ProfilePage from './pages/ProfilePage'
 import AdminBookingsPage from './pages/AdminBookingsPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
 import TechnicianBookingsPage from './pages/TechnicianBookingsPage'
-import authService from './services/authService';
+import authService from './services/authService'
 
 function App() {
-
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-
   useEffect(() => {
     const checkAuth = () => {
-      const authenticated = authService.isAuthenticated();
-      setIsAuthenticated(authenticated);
-      const user = authService.getCurrentUser();
-      setCurrentUser(user);
-    };
+      authService.isAuthenticated()
+      authService.getCurrentUser()
+    }
 
-    checkAuth();
+    checkAuth()
 
-    window.addEventListener('storage', checkAuth);
-    
-    return () => window.removeEventListener('storage', checkAuth);
-  }, []);
+    window.addEventListener('storage', checkAuth)
+
+    return () => window.removeEventListener('storage', checkAuth)
+  }, [])
 
   return (
     <Router>
@@ -55,7 +49,10 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/bookings" element={<AdminBookingsPage />} />
-            <Route path="/technician/bookings" element={<TechnicianBookingsPage />} />
+            <Route
+              path="/technician/bookings"
+              element={<TechnicianBookingsPage />}
+            />
           </Routes>
         </main>
         <footer className="app-footer">

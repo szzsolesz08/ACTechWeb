@@ -1,86 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
-import bookingService from '../services/bookingService';
-import userService from '../services/userService';
-import './AdminBookingsPage.css';
-import { generateInvoice } from '../utils/invoiceGenerator';
-import units from '../utils/Units';
-import prices from '../utils/Prices';
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import authService from '../services/authService'
+import bookingService from '../services/bookingService'
+import userService from '../services/userService'
+import './AdminBookingsPage.css'
+import { generateInvoice } from '../utils/invoiceGenerator'
+import units from '../utils/Units'
+import prices from '../utils/Prices'
 
 function AdminBookingsPage() {
-  const navigate = useNavigate();
-  const [bookings, setBookings] = useState([]);
-  const [technicians, setTechnicians] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [filter, setFilter] = useState('all');
-  const [selectedBooking, setSelectedBooking] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const navigate = useNavigate()
+  const [bookings, setBookings] = useState([])
+  const [technicians, setTechnicians] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [filter, setFilter] = useState('all')
+  const [selectedBooking, setSelectedBooking] = useState(null)
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
   useEffect(() => {
-    const user = authService.getCurrentUser();
+    const user = authService.getCurrentUser()
     if (!user || user.role !== 'admin') {
-      navigate('/');
-      return;
+      navigate('/')
+      return
     }
 
-    fetchData();
-  }, [navigate]);
+    fetchData()
+  }, [navigate])
 
   const fetchData = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
       const [bookingsResponse, techniciansResponse] = await Promise.all([
         bookingService.getAllBookings(),
-        userService.getTechnicians()
-      ]);
-      
-      setBookings(bookingsResponse.bookings || []);
-      setTechnicians(techniciansResponse.technicians || []);
+        userService.getTechnicians(),
+      ])
+
+      setBookings(bookingsResponse.bookings || [])
+      setTechnicians(techniciansResponse.technicians || [])
     } catch (err) {
-      console.error('Error fetching data:', err);
-      setError('Failed to load bookings');
+      console.error('Error fetching data:', err)
+      setError('Failed to load bookings')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
-      await bookingService.updateBookingStatus(bookingId, newStatus);
-      fetchData();
+      await bookingService.updateBookingStatus(bookingId, newStatus)
+      fetchData()
     } catch (err) {
-      console.error('Error updating status:', err);
-      alert('Failed to update booking status');
+      console.error('Error updating status:', err)
+      alert('Failed to update booking status')
     }
-  };
+  }
 
   const handleAssignTechnician = async (bookingId, technicianId) => {
     try {
-      await bookingService.assignTechnician(bookingId, technicianId);
-      fetchData();
+      await bookingService.assignTechnician(bookingId, technicianId)
+      fetchData()
     } catch (err) {
-      console.error('Error assigning technician:', err);
-      alert('Failed to assign technician');
+      console.error('Error assigning technician:', err)
+      alert('Failed to assign technician')
     }
-  };
+  }
 
   const getFilteredBookings = () => {
-    let filtered = bookings;
-    
-    filtered = filtered.filter(b => {
-      const bookingDate = new Date(b.date);
-      return bookingDate.getMonth() === selectedMonth && bookingDate.getFullYear() === selectedYear;
-    });
-    
+    let filtered = bookings
+
+    filtered = filtered.filter((b) => {
+      const bookingDate = new Date(b.date)
+      return (
+        bookingDate.getMonth() === selectedMonth &&
+        bookingDate.getFullYear() === selectedYear
+      )
+    })
+
     if (filter !== 'all') {
-      filtered = filtered.filter(b => b.status === filter);
+      filtered = filtered.filter((b) => b.status === filter)
     }
-    
-    return filtered;
-  };
+
+    return filtered
+  }
 
   const getStatusBadgeClass = (status) => {
     const classes = {
@@ -88,18 +91,18 @@ function AdminBookingsPage() {
       confirmed: 'status-confirmed',
       'in-progress': 'status-in-progress',
       completed: 'status-completed',
-      cancelled: 'status-cancelled'
-    };
-    return classes[status] || '';
-  };
+      cancelled: 'status-cancelled',
+    }
+    return classes[status] || ''
+  }
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
-    });
-  };
+      day: 'numeric',
+    })
+  }
 
   const serviceTypes = [
     { id: 1, value: 'installation', name: 'Installation' },
@@ -108,16 +111,17 @@ function AdminBookingsPage() {
     { id: 4, value: 'inspection', name: 'Inspection' },
     { id: 5, value: 'consultation', name: 'Consultation' },
     { id: 6, value: 'maintenance-plan', name: 'Annual Maintenance Plan' },
-  ];
+  ]
 
   const maintenancePlans = [
     { id: 'basic', price: 86000, name: 'Basic Plan - 86,000 Ft/year' },
-    { id: 'premium', price: 151000, name: 'Premium Plan - 151,000 Ft/year' }
-  ];
+    { id: 'premium', price: 151000, name: 'Premium Plan - 151,000 Ft/year' },
+  ]
 
   const handleGenerateInvoice = (booking) => {
     const bookingData = {
-      serviceType: serviceTypes.find(s => s.value === booking.serviceType)?.id || '',
+      serviceType:
+        serviceTypes.find((s) => s.value === booking.serviceType)?.id || '',
       unit: booking.unit || '',
       maintenancePlan: booking.maintenancePlan || '',
       date: booking.date,
@@ -127,35 +131,58 @@ function AdminBookingsPage() {
       phone: booking.customerInfo.phone,
       address: booking.customerInfo.address,
       description: booking.description,
-      price: booking.price || 0
-    };
-    
-    generateInvoice(bookingData, booking.referenceNumber, serviceTypes, units, prices, maintenancePlans);
-  };
+      price: booking.price || 0,
+    }
 
-  if (loading) {
-    return <div className="loading">Loading bookings...</div>;
+    generateInvoice(
+      bookingData,
+      booking.referenceNumber,
+      serviceTypes,
+      units,
+      prices,
+      maintenancePlans
+    )
   }
 
-  const filteredBookings = getFilteredBookings();
-  
-  const monthBookings = bookings.filter(b => {
-    const bookingDate = new Date(b.date);
-    return bookingDate.getMonth() === selectedMonth && bookingDate.getFullYear() === selectedYear;
-  });
-  
+  if (loading) {
+    return <div className="loading">Loading bookings...</div>
+  }
+
+  const filteredBookings = getFilteredBookings()
+
+  const monthBookings = bookings.filter((b) => {
+    const bookingDate = new Date(b.date)
+    return (
+      bookingDate.getMonth() === selectedMonth &&
+      bookingDate.getFullYear() === selectedYear
+    )
+  })
+
   const stats = {
     total: monthBookings.length,
-    pending: monthBookings.filter(b => b.status === 'pending').length,
-    confirmed: monthBookings.filter(b => b.status === 'confirmed').length,
-    inProgress: monthBookings.filter(b => b.status === 'in-progress').length,
-    completed: monthBookings.filter(b => b.status === 'completed').length,
-    cancelled: monthBookings.filter(b => b.status === 'cancelled').length
-  };
-  
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const currentYear = new Date().getFullYear();
-  const years = [currentYear - 1, currentYear, currentYear + 1];
+    pending: monthBookings.filter((b) => b.status === 'pending').length,
+    confirmed: monthBookings.filter((b) => b.status === 'confirmed').length,
+    inProgress: monthBookings.filter((b) => b.status === 'in-progress').length,
+    completed: monthBookings.filter((b) => b.status === 'completed').length,
+    cancelled: monthBookings.filter((b) => b.status === 'cancelled').length,
+  }
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+  const currentYear = new Date().getFullYear()
+  const years = [currentYear - 1, currentYear, currentYear + 1]
 
   return (
     <div className="admin-bookings-page">
@@ -170,22 +197,35 @@ function AdminBookingsPage() {
       <div className="month-year-selector">
         <div className="selector-group">
           <label>Month:</label>
-          <select value={selectedMonth} onChange={(e) => setSelectedMonth(parseInt(e.target.value))}>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+          >
             {monthNames.map((month, index) => (
-              <option key={index} value={index}>{month}</option>
+              <option key={index} value={index}>
+                {month}
+              </option>
             ))}
           </select>
         </div>
         <div className="selector-group">
           <label>Year:</label>
-          <select value={selectedYear} onChange={(e) => setSelectedYear(parseInt(e.target.value))}>
-            {years.map(year => (
-              <option key={year} value={year}>{year}</option>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
             ))}
           </select>
         </div>
         <div className="selected-period">
-          Showing bookings for <strong>{monthNames[selectedMonth]} {selectedYear}</strong>
+          Showing bookings for{' '}
+          <strong>
+            {monthNames[selectedMonth]} {selectedYear}
+          </strong>
         </div>
       </div>
 
@@ -217,38 +257,38 @@ function AdminBookingsPage() {
       </div>
 
       <div className="filter-tabs">
-        <button 
-          className={filter === 'all' ? 'active' : ''} 
+        <button
+          className={filter === 'all' ? 'active' : ''}
           onClick={() => setFilter('all')}
         >
           All ({stats.total})
         </button>
-        <button 
-          className={filter === 'pending' ? 'active' : ''} 
+        <button
+          className={filter === 'pending' ? 'active' : ''}
           onClick={() => setFilter('pending')}
         >
           Pending ({stats.pending})
         </button>
-        <button 
-          className={filter === 'confirmed' ? 'active' : ''} 
+        <button
+          className={filter === 'confirmed' ? 'active' : ''}
           onClick={() => setFilter('confirmed')}
         >
           Confirmed ({stats.confirmed})
         </button>
-        <button 
-          className={filter === 'in-progress' ? 'active' : ''} 
+        <button
+          className={filter === 'in-progress' ? 'active' : ''}
           onClick={() => setFilter('in-progress')}
         >
           In Progress ({stats.inProgress})
         </button>
-        <button 
-          className={filter === 'completed' ? 'active' : ''} 
+        <button
+          className={filter === 'completed' ? 'active' : ''}
           onClick={() => setFilter('completed')}
         >
           Completed ({stats.completed})
         </button>
-        <button 
-          className={filter === 'cancelled' ? 'active' : ''} 
+        <button
+          className={filter === 'cancelled' ? 'active' : ''}
           onClick={() => setFilter('cancelled')}
         >
           Cancelled ({stats.cancelled})
@@ -278,37 +318,51 @@ function AdminBookingsPage() {
                 </td>
               </tr>
             ) : (
-              filteredBookings.map(booking => (
+              filteredBookings.map((booking) => (
                 <tr key={booking._id}>
                   <td className="ref-number">{booking.referenceNumber}</td>
                   <td>
                     <div className="customer-info">
-                      <div className="customer-name">{booking.customerInfo.name}</div>
-                      <div className="customer-email">{booking.customerInfo.email}</div>
-                      <div className="customer-phone">{booking.customerInfo.phone}</div>
+                      <div className="customer-name">
+                        {booking.customerInfo.name}
+                      </div>
+                      <div className="customer-email">
+                        {booking.customerInfo.email}
+                      </div>
+                      <div className="customer-phone">
+                        {booking.customerInfo.phone}
+                      </div>
                     </div>
                   </td>
                   <td className="service-type">
                     {booking.serviceType.replace('-', ' ')}
                     {booking.maintenancePlan && (
-                      <span className="plan-badge">{booking.maintenancePlan}</span>
+                      <span className="plan-badge">
+                        {booking.maintenancePlan}
+                      </span>
                     )}
                     {booking.unit && (
                       <div className="unit-info">
-                        Unit: {units.find(u => u.id === booking.unit)?.name || `#${booking.unit}`}
+                        Unit:{' '}
+                        {units.find((u) => u.id === booking.unit)?.name ||
+                          `#${booking.unit}`}
                       </div>
                     )}
                   </td>
                   <td className="price-cell">
-                    {booking.price ? `${booking.price.toLocaleString('hu-HU')} Ft` : 'N/A'}
+                    {booking.price
+                      ? `${booking.price.toLocaleString('hu-HU')} Ft`
+                      : 'N/A'}
                   </td>
                   <td>{formatDate(booking.date)}</td>
                   <td>{booking.timeSlot}</td>
                   <td>
-                    <select 
+                    <select
                       className={`status-badge ${getStatusBadgeClass(booking.status)}`}
                       value={booking.status}
-                      onChange={(e) => handleStatusChange(booking._id, e.target.value)}
+                      onChange={(e) =>
+                        handleStatusChange(booking._id, e.target.value)
+                      }
                     >
                       <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
@@ -318,13 +372,15 @@ function AdminBookingsPage() {
                     </select>
                   </td>
                   <td>
-                    <select 
+                    <select
                       className="technician-select"
                       value={booking.assignedTechnician?._id || ''}
-                      onChange={(e) => handleAssignTechnician(booking._id, e.target.value)}
+                      onChange={(e) =>
+                        handleAssignTechnician(booking._id, e.target.value)
+                      }
                     >
                       <option value="">Not Assigned</option>
-                      {technicians.map(tech => (
+                      {technicians.map((tech) => (
                         <option key={tech._id} value={tech._id}>
                           {tech.firstName} {tech.lastName}
                         </option>
@@ -333,13 +389,13 @@ function AdminBookingsPage() {
                   </td>
                   <td>
                     <div className="action-buttons">
-                      <button 
+                      <button
                         className="btn-view"
                         onClick={() => setSelectedBooking(booking)}
                       >
                         View
                       </button>
-                      <button 
+                      <button
                         className="btn-invoice"
                         onClick={() => handleGenerateInvoice(booking)}
                         title="Generate Invoice"
@@ -360,7 +416,12 @@ function AdminBookingsPage() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Booking Details</h2>
-              <button className="modal-close" onClick={() => setSelectedBooking(null)}>×</button>
+              <button
+                className="modal-close"
+                onClick={() => setSelectedBooking(null)}
+              >
+                ×
+              </button>
             </div>
             <div className="modal-body">
               <div className="detail-group">
@@ -385,29 +446,41 @@ function AdminBookingsPage() {
               </div>
               <div className="detail-group">
                 <label>Service Type:</label>
-                <p className="capitalize">{selectedBooking.serviceType.replace('-', ' ')}</p>
+                <p className="capitalize">
+                  {selectedBooking.serviceType.replace('-', ' ')}
+                </p>
               </div>
               {selectedBooking.maintenancePlan && (
                 <div className="detail-group">
                   <label>Maintenance Plan:</label>
-                  <p className="capitalize">{selectedBooking.maintenancePlan}</p>
+                  <p className="capitalize">
+                    {selectedBooking.maintenancePlan}
+                  </p>
                 </div>
               )}
               {selectedBooking.unit && (
                 <div className="detail-group">
                   <label>AC Unit:</label>
-                  <p>{units.find(u => u.id === selectedBooking.unit)?.name || `Unit #${selectedBooking.unit}`}</p>
+                  <p>
+                    {units.find((u) => u.id === selectedBooking.unit)?.name ||
+                      `Unit #${selectedBooking.unit}`}
+                  </p>
                 </div>
               )}
               {selectedBooking.price && (
                 <div className="detail-group">
                   <label>Price:</label>
-                  <p className="price-highlight">{selectedBooking.price.toLocaleString('hu-HU')} Ft</p>
+                  <p className="price-highlight">
+                    {selectedBooking.price.toLocaleString('hu-HU')} Ft
+                  </p>
                 </div>
               )}
               <div className="detail-group">
                 <label>Date & Time:</label>
-                <p>{formatDate(selectedBooking.date)} - {selectedBooking.timeSlot}</p>
+                <p>
+                  {formatDate(selectedBooking.date)} -{' '}
+                  {selectedBooking.timeSlot}
+                </p>
               </div>
               <div className="detail-group">
                 <label>Description:</label>
@@ -415,7 +488,9 @@ function AdminBookingsPage() {
               </div>
               <div className="detail-group">
                 <label>Status:</label>
-                <p className={`status-badge ${getStatusBadgeClass(selectedBooking.status)}`}>
+                <p
+                  className={`status-badge ${getStatusBadgeClass(selectedBooking.status)}`}
+                >
                   {selectedBooking.status}
                 </p>
               </div>
@@ -423,7 +498,8 @@ function AdminBookingsPage() {
                 <div className="detail-group">
                   <label>Assigned Technician:</label>
                   <p>
-                    {selectedBooking.assignedTechnician.firstName} {selectedBooking.assignedTechnician.lastName}
+                    {selectedBooking.assignedTechnician.firstName}{' '}
+                    {selectedBooking.assignedTechnician.lastName}
                   </p>
                 </div>
               )}
@@ -435,13 +511,13 @@ function AdminBookingsPage() {
               )}
             </div>
             <div className="modal-footer">
-              <button 
+              <button
                 className="btn btn-secondary"
                 onClick={() => handleGenerateInvoice(selectedBooking)}
               >
                 Download Invoice (PDF)
               </button>
-              <button 
+              <button
                 className="btn btn-primary"
                 onClick={() => setSelectedBooking(null)}
               >
@@ -452,7 +528,7 @@ function AdminBookingsPage() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default AdminBookingsPage;
+export default AdminBookingsPage

@@ -55,7 +55,9 @@
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   padding: 2.5rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -117,7 +119,9 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   padding: 2rem 1.5rem;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -153,7 +157,11 @@
 }
 
 .member-image.placeholder {
-  background: linear-gradient(135deg, rgba(0, 123, 255, 0.2), rgba(0, 123, 255, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 123, 255, 0.2),
+    rgba(0, 123, 255, 0.05)
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,7 +199,11 @@
   padding: 3rem 2rem;
   text-align: center;
   margin: 2rem 0;
-  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
 }
 
@@ -262,19 +274,19 @@
   .about-content {
     grid-template-columns: 1fr;
   }
-  
+
   .team-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .page-header h2 {
     font-size: 2rem;
   }
-  
+
   .about-cta {
     padding: 2rem 1rem;
   }
-  
+
   .about-cta .btn {
     display: block;
     width: 100%;
@@ -287,38 +299,38 @@
   .page-header h2 {
     font-size: 1.75rem;
   }
-  
+
   .page-header p {
     font-size: 1rem;
   }
-  
+
   .about-story,
   .about-mission {
     padding: 2rem 1.5rem;
   }
-  
+
   .about-story h3,
   .about-mission h3 {
     font-size: 1.5rem;
   }
-  
+
   .team-member {
     padding: 1.5rem 1rem;
   }
-  
+
   .member-image {
     width: 100px;
     height: 100px;
   }
-  
+
   .team-member h4 {
     font-size: 1.1rem;
   }
-  
+
   .about-cta h3 {
     font-size: 1.5rem;
   }
-  
+
   .about-cta p {
     font-size: 1rem;
   }

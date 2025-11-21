@@ -60,7 +60,9 @@
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   padding: 2rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -159,7 +161,9 @@
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
   color: var(--dark-color);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .form-group input:focus,
@@ -267,11 +271,11 @@
   .contact-container {
     grid-template-columns: 1fr;
   }
-  
+
   .contact-info {
     order: 2;
   }
-  
+
   .contact-form {
     order: 1;
   }
@@ -281,19 +285,19 @@
   .page-header h2 {
     font-size: 2rem;
   }
-  
+
   .contact-form {
     padding: 2rem 1.5rem;
   }
-  
+
   .emergency-card {
     padding: 2rem 1.5rem;
   }
-  
+
   .emergency-card h3 {
     font-size: 1.5rem;
   }
-  
+
   .emergency-number {
     font-size: 2rem;
     padding: 0.75rem 1.5rem;
@@ -304,48 +308,48 @@
   .page-header h2 {
     font-size: 1.75rem;
   }
-  
+
   .page-header p {
     font-size: 1rem;
   }
-  
+
   .contact-method {
     padding: 1.5rem;
   }
-  
+
   .contact-icon {
     height: 60px;
     width: 60px;
     font-size: 2.5rem;
   }
-  
+
   .contact-form {
     padding: 1.5rem 1rem;
   }
-  
+
   .contact-form h3 {
     font-size: 1.5rem;
   }
-  
+
   .form-group input,
   .form-group select,
   .form-group textarea {
     padding: 0.6rem 0.8rem;
     font-size: 0.95rem;
   }
-  
+
   .emergency-card {
     padding: 1.5rem 1rem;
   }
-  
+
   .emergency-card h3 {
     font-size: 1.25rem;
   }
-  
+
   .emergency-card p {
     font-size: 1rem;
   }
-  
+
   .emergency-number {
     font-size: 1.5rem;
     padding: 0.5rem 1rem;

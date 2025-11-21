@@ -162,10 +162,10 @@
   font-size: 0.95rem;
 }
 
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="tel"],
-.form-group input[type="password"] {
+.form-group input[type='text'],
+.form-group input[type='email'],
+.form-group input[type='tel'],
+.form-group input[type='password'] {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 2px solid #e0e0e0;
@@ -174,7 +174,10 @@
   font-size: 1rem;
   color: var(--dark-color);
   background-color: #fafafa;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
   box-sizing: border-box;
 }
 
@@ -217,7 +220,7 @@
   gap: 0.75rem;
 }
 
-.checkbox-group input[type="checkbox"] {
+.checkbox-group input[type='checkbox'] {
   margin-top: 0.25rem;
   width: 18px;
   height: 18px;
@@ -444,27 +447,27 @@
   .page-header h2 {
     font-size: 2rem;
   }
-  
+
   .auth-box {
     padding: 2rem 1.5rem;
   }
-  
+
   .auth-form-container {
     padding: 2rem 1.5rem;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .registration-success {
     padding: 3rem 2rem;
   }
-  
+
   .success-actions {
     flex-direction: column;
   }
-  
+
   .success-actions .btn {
     width: 100%;
   }
@@ -474,36 +477,36 @@
   .page-header h2 {
     font-size: 1.75rem;
   }
-  
+
   .page-header p {
     font-size: 1rem;
   }
-  
+
   .auth-box {
     padding: 1.5rem 1rem;
   }
-  
+
   .auth-form-container {
     padding: 1.5rem 1rem;
   }
-  
+
   .auth-header h3 {
     font-size: 1.5rem;
   }
-  
+
   .form-group input {
     padding: 0.6rem 0.8rem;
     font-size: 0.95rem;
   }
-  
+
   .auth-benefits {
     padding: 1.5rem;
   }
-  
+
   .registration-success {
     padding: 2rem 1.5rem;
   }
-  
+
   .registration-success h3 {
     font-size: 1.5rem;
   }

@@ -154,7 +154,9 @@
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
   color: var(--dark-color);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .form-group input:focus,
@@ -198,7 +200,7 @@
   background-color: rgba(0, 123, 255, 0.05);
 }
 
-.service-type-option input[type="radio"] {
+.service-type-option input[type='radio'] {
   display: none;
 }
 
@@ -242,7 +244,7 @@
   color: var(--primary-color);
 }
 
-.time-slot-option input[type="radio"] {
+.time-slot-option input[type='radio'] {
   display: none;
 }
 
@@ -276,7 +278,7 @@
   color: var(--primary-color);
 }
 
-.technician-option input[type="radio"] {
+.technician-option input[type='radio'] {
   display: none;
 }
 
@@ -339,7 +341,7 @@
   background-color: rgba(0, 123, 255, 0.05);
 }
 
-.plan-selection-option input[type="radio"] {
+.plan-selection-option input[type='radio'] {
   display: none;
 }
 
@@ -511,25 +513,25 @@
   .booking-progress {
     flex-wrap: wrap;
   }
-  
+
   .progress-step {
     flex-basis: 33.33%;
     margin-bottom: 1rem;
   }
-  
+
   .booking-form-container {
     padding: 2rem 1.5rem;
   }
-  
+
   .service-type-grid,
   .time-slot-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .button-navigation {
     flex-direction: column;
   }
-  
+
   .page-header h2 {
     font-size: 2rem;
   }
@@ -539,40 +541,40 @@
   .page-header h2 {
     font-size: 1.75rem;
   }
-  
+
   .page-header p {
     font-size: 1rem;
   }
-  
+
   .booking-form-container {
     padding: 1.5rem 1rem;
   }
-  
+
   .booking-step h3 {
     font-size: 1.5rem;
   }
-  
+
   .progress-circle {
     width: 35px;
     height: 35px;
     font-size: 0.9rem;
   }
-  
+
   .progress-label {
     font-size: 0.75rem;
   }
-  
+
   .form-group input,
   .form-group select,
   .form-group textarea {
     padding: 0.6rem 0.8rem;
     font-size: 0.95rem;
   }
-  
+
   .booking-success h3 {
     font-size: 1.5rem;
   }
-  
+
   .booking-reference {
     font-size: 1.2rem;
   }
@@ -720,29 +722,29 @@
   .booking-confirmation {
     padding: 2rem 1rem;
   }
-  
+
   .confirmation-icon {
     width: 60px;
     height: 60px;
     font-size: 2rem;
   }
-  
+
   .booking-confirmation h3 {
     font-size: 1.5rem;
   }
-  
+
   .reference-number {
     font-size: 1.3rem;
   }
-  
+
   .confirmation-actions {
     flex-direction: column;
   }
-  
+
   .confirmation-actions .btn {
     width: 100%;
   }
-  
+
   .price-summary .total-price {
     font-size: 1.5rem;
   }

@@ -19,34 +19,41 @@ Frontend application for AC Technician Services booking platform.
 ## 🛠️ Installation
 
 1. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 2. **Configure environment variables:**
-   
+
    Create a `.env` file in the client root directory:
+
    ```env
    VITE_API_URL=http://localhost:5000/api
    ```
-   
+
    **Note:** The `.env` file is gitignored for security. Never commit it to version control.
 
 ## 🏃 Running the Application
 
 ### Development Mode
+
 ```bash
 npm run dev
 ```
+
 The application will start on `http://localhost:5173`
 
 ### Production Build
+
 ```bash
 npm run build
 ```
+
 Build output will be in the `dist/` directory
 
 ### Preview Production Build
+
 ```bash
 npm run preview
 ```
@@ -86,12 +93,14 @@ client/
 ## 🎨 Features
 
 ### User Authentication
+
 - User registration with validation
 - Login/logout functionality
 - Role-based access (Customer, Technician, Admin)
 - Persistent authentication with localStorage
 
 ### Customer Features
+
 - Browse AC services
 - Book service appointments
 - Select preferred date and time
@@ -100,11 +109,13 @@ client/
 - Update profile information
 
 ### Technician Features
+
 - View assigned bookings
 - Update booking status
 - Manage schedule
 
 ### Admin Features
+
 - View all bookings
 - Manage booking statuses
 - Assign technicians to bookings
@@ -128,31 +139,33 @@ All API calls use Axios with automatic token injection for authenticated request
 
 ## 🎯 Available Routes
 
-| Route | Component | Access |
-|-------|-----------|--------|
-| `/` | HomePage | Public |
-| `/services` | ServicesPage | Public |
-| `/login` | LoginPage | Public |
-| `/register` | RegisterPage | Public |
-| `/profile` | ProfilePage | Authenticated |
-| `/booking` | BookingPage | Authenticated |
-| `/admin/bookings` | AdminBookingsPage | Admin only |
+| Route                  | Component              | Access          |
+| ---------------------- | ---------------------- | --------------- |
+| `/`                    | HomePage               | Public          |
+| `/services`            | ServicesPage           | Public          |
+| `/login`               | LoginPage              | Public          |
+| `/register`            | RegisterPage           | Public          |
+| `/profile`             | ProfilePage            | Authenticated   |
+| `/booking`             | BookingPage            | Authenticated   |
+| `/admin/bookings`      | AdminBookingsPage      | Admin only      |
 | `/technician/bookings` | TechnicianBookingsPage | Technician only |
 
 ## 🔧 Configuration
 
 ### Vite Configuration
+
 The project uses Vite for fast development and optimized builds. Configuration is in `vite.config.js`.
 
 ### ESLint Configuration
+
 Code linting is configured in `eslint.config.js` with React-specific rules.
 
 ## 🌐 Environment Variables
 
 The `.env` file contains the following configuration:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
+| Variable       | Description     | Default                     |
+| -------------- | --------------- | --------------------------- |
 | `VITE_API_URL` | Backend API URL | `http://localhost:5000/api` |
 
 **Security Note:** The `.env` file is excluded from Git via `.gitignore`. This prevents sensitive configuration from being committed to the repository.
@@ -160,12 +173,14 @@ The `.env` file contains the following configuration:
 ## 📦 Dependencies
 
 ### Production
+
 - `react` - UI library
 - `react-dom` - React DOM renderer
 - `react-router-dom` - Routing
 - `axios` - HTTP client
 
 ### Development
+
 - `vite` - Build tool
 - `eslint` - Code linting
 - `@vitejs/plugin-react` - React plugin for Vite
@@ -173,6 +188,7 @@ The `.env` file contains the following configuration:
 ## 🚀 Deployment
 
 1. Build the production bundle:
+
    ```bash
    npm run build
    ```
@@ -192,13 +208,17 @@ The `.env` file contains the following configuration:
 ## 🐛 Common Issues
 
 ### Port Already in Use
+
 If port 5173 is already in use, Vite will automatically use the next available port.
 
 ### API Connection Error
+
 Ensure the backend server is running and the `VITE_API_URL` is correctly set in `.env`.
 
 ### Authentication Issues
+
 Clear localStorage and try logging in again:
+
 ```javascript
 localStorage.clear()
 ```

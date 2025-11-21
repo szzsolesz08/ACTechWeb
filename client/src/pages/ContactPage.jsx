@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import './ContactPage.css';
+import React, { useState } from 'react'
+import './ContactPage.css'
 
 function ContactPage() {
   const [formData, setFormData] = useState({
@@ -7,31 +7,31 @@ function ContactPage() {
     email: '',
     phone: '',
     subject: '',
-    message: ''
-  });
+    message: '',
+  })
 
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false)
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [name]: value
-    });
-  };
+      [name]: value,
+    })
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    setFormSubmitted(true);
+    e.preventDefault()
+    console.log('Form submitted:', formData)
+    setFormSubmitted(true)
     setFormData({
       name: '',
       email: '',
       phone: '',
       subject: '',
-      message: ''
-    });
-  };
+      message: '',
+    })
+  }
 
   return (
     <div className="contact-page">
@@ -39,7 +39,7 @@ function ContactPage() {
         <h2>Contact Us</h2>
         <p>Get in touch with our team for inquiries, quotes, or emergencies.</p>
       </section>
-      
+
       <div className="contact-container">
         <section className="contact-info">
           <div className="contact-method">
@@ -48,7 +48,7 @@ function ContactPage() {
             <p>Customer Service: +36 1 234 5678</p>
             <p>Emergency Service: +36 1 234 5679</p>
           </div>
-          
+
           <div className="contact-method">
             <div className="contact-icon">✉️</div>
             <h3>Email</h3>
@@ -56,7 +56,7 @@ function ContactPage() {
             <p>Support: support@actechnician.com</p>
             <p>Quotes: quotes@actechnician.com</p>
           </div>
-          
+
           <div className="contact-method">
             <div className="contact-icon">📍</div>
             <h3>Location</h3>
@@ -67,14 +67,17 @@ function ContactPage() {
             <p>Sunday: Closed (Emergency Services Available)</p>
           </div>
         </section>
-        
+
         <section className="contact-form">
           <h3>Send Us a Message</h3>
           {formSubmitted ? (
             <div className="form-success">
-              <p>Thank you for your message! Our team will get back to you shortly.</p>
-              <button 
-                className="btn btn-secondary" 
+              <p>
+                Thank you for your message! Our team will get back to you
+                shortly.
+              </p>
+              <button
+                className="btn btn-secondary"
                 onClick={() => setFormSubmitted(false)}
               >
                 Send Another Message
@@ -84,45 +87,45 @@ function ContactPage() {
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">Full Name</label>
-                <input 
-                  type="text" 
-                  id="name" 
-                  name="name" 
-                  value={formData.name} 
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
-                  required 
+                  required
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="email">Email Address</label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  name="email" 
-                  value={formData.email} 
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  required 
+                  required
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="phone">Phone Number</label>
-                <input 
-                  type="tel" 
-                  id="phone" 
-                  name="phone" 
-                  value={formData.phone} 
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
                   onChange={handleChange}
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="subject">Subject</label>
-                <select 
-                  id="subject" 
-                  name="subject" 
-                  value={formData.subject} 
+                <select
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
                   onChange={handleChange}
                   required
                 >
@@ -134,34 +137,39 @@ function ContactPage() {
                   <option value="other">Other</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="message">Message</label>
-                <textarea 
-                  id="message" 
-                  name="message" 
-                  rows="5" 
-                  value={formData.message} 
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  value={formData.message}
                   onChange={handleChange}
                   required
                 ></textarea>
               </div>
-              
-              <button type="submit" className="btn btn-primary">Send Message</button>
+
+              <button type="submit" className="btn btn-primary">
+                Send Message
+              </button>
             </form>
           )}
         </section>
       </div>
-      
+
       <section className="emergency-contact">
         <div className="emergency-card">
           <h3>Emergency Service Available 24/7</h3>
-          <p>For urgent AC issues outside normal business hours, call our emergency line:</p>
+          <p>
+            For urgent AC issues outside normal business hours, call our
+            emergency line:
+          </p>
           <div className="emergency-number">+36 1 234 5679</div>
         </div>
       </section>
     </div>
-  );
+  )
 }
 
-export default ContactPage;
+export default ContactPage

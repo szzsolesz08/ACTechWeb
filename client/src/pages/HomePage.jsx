@@ -1,51 +1,60 @@
-import React, { useEffect } from 'react';
-import './HomePage.css';
-import { useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
+import React, { useEffect } from 'react'
+import './HomePage.css'
+import { useNavigate } from 'react-router-dom'
+import authService from '../services/authService'
 
 function HomePage() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (authService.isAuthenticated()) {
       if (authService.getCurrentUser().role === 'technician') {
-        navigate('/technician/bookings');
+        navigate('/technician/bookings')
       } else if (authService.getCurrentUser().role === 'admin') {
-        navigate('/admin/bookings');
+        navigate('/admin/bookings')
       }
     }
-  }, [navigate]);
-  
+  }, [navigate])
+
   return (
     <div className="home-page">
       <section className="hero">
         <div className="hero-content">
           <h2>Professional AC Services</h2>
-          <p>Your comfort is our priority. Expert installation, maintenance, and repair services for all AC systems.</p>
+          <p>
+            Your comfort is our priority. Expert installation, maintenance, and
+            repair services for all AC systems.
+          </p>
         </div>
       </section>
-      
+
       <section className="features">
         <div className="feature">
           <div className="feature-icon">🔧</div>
           <h3>Repairs</h3>
           <p>Fast and reliable repair services for all AC brands and models.</p>
         </div>
-        
+
         <div className="feature">
           <div className="feature-icon">❄️</div>
           <h3>Installation</h3>
-          <p>Professional installation of new AC systems for homes and businesses.</p>
+          <p>
+            Professional installation of new AC systems for homes and
+            businesses.
+          </p>
         </div>
-        
+
         <div className="feature">
           <div className="feature-icon">🔍</div>
           <h3>Maintenance</h3>
-          <p>Regular maintenance to keep your AC running efficiently all year round.</p>
+          <p>
+            Regular maintenance to keep your AC running efficiently all year
+            round.
+          </p>
         </div>
       </section>
     </div>
-  );
+  )
 }
 
-export default HomePage;
+export default HomePage

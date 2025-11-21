@@ -11,7 +11,7 @@ export default [
       ecmaVersion: 2020,
       globals: {
         ...globals.browser,
-        require: true
+        require: true,
       },
       parserOptions: {
         ecmaVersion: 'latest',

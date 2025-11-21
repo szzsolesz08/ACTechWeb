@@ -105,11 +105,21 @@
   border-left: 4px solid #007bff;
 }
 
-.stat-card.stat-pending { border-left-color: #ffc107; }
-.stat-card.stat-confirmed { border-left-color: #17a2b8; }
-.stat-card.stat-in-progress { border-left-color: #007bff; }
-.stat-card.stat-completed { border-left-color: #28a745; }
-.stat-card.stat-cancelled { border-left-color: #dc3545; }
+.stat-card.stat-pending {
+  border-left-color: #ffc107;
+}
+.stat-card.stat-confirmed {
+  border-left-color: #17a2b8;
+}
+.stat-card.stat-in-progress {
+  border-left-color: #007bff;
+}
+.stat-card.stat-completed {
+  border-left-color: #28a745;
+}
+.stat-card.stat-cancelled {
+  border-left-color: #dc3545;
+}
 
 .stat-value {
   font-size: 2.5rem;

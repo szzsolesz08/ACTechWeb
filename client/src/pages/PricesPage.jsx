@@ -1,8 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './PricesPage.css';
-import prices from '../utils/Prices.js';
-import units from '../utils/Units.js';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import './PricesPage.css'
+import prices from '../utils/Prices.js'
+import units from '../utils/Units.js'
 
 function PricesPage() {
   return (
@@ -21,12 +21,14 @@ function PricesPage() {
                 <img src={unit.image} alt={unit.description} />
               </div>
               <h4>{unit.name}</h4>
-              <p className="product-price">{unit.price.toLocaleString('hu-HU')} Ft</p>
+              <p className="product-price">
+                {unit.price.toLocaleString('hu-HU')} Ft
+              </p>
             </div>
           ))}
         </div>
       </section>
-      
+
       <section className="pricing-tables">
         <div className="pricing-category">
           <h3>Service Prices</h3>
@@ -50,7 +52,7 @@ function PricesPage() {
           </table>
         </div>
       </section>
-      
+
       <section className="maintenance-plans">
         <h3>Annual Maintenance Plans</h3>
         <div className="plan-cards">
@@ -62,9 +64,11 @@ function PricesPage() {
               <li>Priority scheduling</li>
               <li>10% discount on repairs</li>
             </ul>
-            <Link to="/booking?plan=basic" className="btn btn-secondary">Select Plan</Link>
+            <Link to="/booking?plan=basic" className="btn btn-secondary">
+              Select Plan
+            </Link>
           </div>
-          
+
           <div className="plan-card featured">
             <h4>Premium Plan</h4>
             <p className="price">151 000 Ft/year</p>
@@ -75,7 +79,9 @@ function PricesPage() {
               <li>Free filter replacements</li>
               <li>Extended warranty on parts</li>
             </ul>
-            <Link to="/booking?plan=premium" className="btn btn-primary">Select Plan</Link>
+            <Link to="/booking?plan=premium" className="btn btn-primary">
+              Select Plan
+            </Link>
           </div>
         </div>
       </section>
@@ -83,20 +89,28 @@ function PricesPage() {
       <section className="pricing-info">
         <div className="price-note">
           <p>
-            <strong>Note:</strong> The prices listed below are estimates and may vary depending on specific 
-            system requirements, property size, and complexity of the job. Contact us for a personalized quote.
+            <strong>Note:</strong> The prices listed below are estimates and may
+            vary depending on specific system requirements, property size, and
+            complexity of the job. Contact us for a personalized quote.
           </p>
         </div>
       </section>
-      
+
       <section className="price-cta">
         <h3>Have you already decided?</h3>
-        <p>Click the button below to book your service or contact us for more information.</p>
-          <Link to="/booking" className="btn btn-primary">Book Now</Link>
-          <Link to="/contact" className="btn btn-secondary">Contact Us</Link>
+        <p>
+          Click the button below to book your service or contact us for more
+          information.
+        </p>
+        <Link to="/booking" className="btn btn-primary">
+          Book Now
+        </Link>
+        <Link to="/contact" className="btn btn-secondary">
+          Contact Us
+        </Link>
       </section>
     </div>
-  );
+  )
 }
 
-export default PricesPage;
+export default PricesPage
