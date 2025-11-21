@@ -10,7 +10,7 @@
   position: relative;
   height: 80vh;
   min-height: 600px;
-  background: url('../assets/hero-bg.svg') center/cover no-repeat;
+  background: url('../../assets/hero-bg.svg') center/cover no-repeat;
   color: white;
   display: flex;
   align-items: center;

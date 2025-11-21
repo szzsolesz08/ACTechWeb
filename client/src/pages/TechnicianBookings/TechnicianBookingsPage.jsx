@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import authService from '../services/authService'
-import bookingService from '../services/bookingService'
+import authService from '../../services/authService'
+import bookingService from '../../services/bookingService'
 import './TechnicianBookingsPage.css'
 
 function TechnicianBookingsPage() {

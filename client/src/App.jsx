@@ -4,18 +4,20 @@ import './App.css'
 
 import NavigationBar from './components/NavigationBar'
 
-import HomePage from './pages/HomePage'
-import ServicesPage from './pages/ServicesPage'
-import PricesPage from './pages/PricesPage'
-import AboutPage from './pages/AboutPage'
-import ContactPage from './pages/ContactPage'
-import BookingPage from './pages/BookingPage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import ProfilePage from './pages/ProfilePage'
-import AdminBookingsPage from './pages/AdminBookingsPage'
-import AdminDashboardPage from './pages/AdminDashboardPage'
-import TechnicianBookingsPage from './pages/TechnicianBookingsPage'
+import HomePage from './pages/Home/HomePage'
+import ServicesPage from './pages/Services/ServicesPage'
+import PricesPage from './pages/Prices/PricesPage'
+import AboutPage from './pages/About/AboutPage'
+import ContactPage from './pages/Contact/ContactPage'
+import BookingPage from './pages/Booking/BookingPage'
+import LoginPage from './pages/Auth/LoginPage'
+import RegisterPage from './pages/Auth/RegisterPage'
+import ProfilePage from './pages/Profile/ProfilePage'
+import AdminBookingsPage from './pages/AdminBookings/AdminBookingsPage'
+import AdminDashboardPage from './pages/AdminDashboard/AdminDashboardPage'
+import AdminContactPage from './pages/AdminContact/AdminContactPage'
+import TechnicianBookingsPage from './pages/TechnicianBookings/TechnicianBookingsPage'
+import TechnicianContactPage from './pages/TechnicianContact/TechnicianContactPage'
 import authService from './services/authService'
 
 function App() {
@@ -49,9 +51,14 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/bookings" element={<AdminBookingsPage />} />
+            <Route path="/admin/contacts" element={<AdminContactPage />} />
             <Route
               path="/technician/bookings"
               element={<TechnicianBookingsPage />}
+            />
+            <Route
+              path="/technician/contacts"
+              element={<TechnicianContactPage />}
             />
           </Routes>
         </main>

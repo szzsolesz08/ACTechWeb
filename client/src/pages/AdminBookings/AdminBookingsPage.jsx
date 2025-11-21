@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import authService from '../services/authService'
-import bookingService from '../services/bookingService'
-import userService from '../services/userService'
+import authService from '../../services/authService'
+import bookingService from '../../services/bookingService'
+import userService from '../../services/userService'
 import './AdminBookingsPage.css'
-import { generateInvoice } from '../utils/invoiceGenerator'
-import units from '../utils/Units'
-import prices from '../utils/Prices'
+import { generateInvoice } from '../../utils/invoiceGenerator'
+import units from '../../utils/Units'
+import prices from '../../utils/Prices'
 
 function AdminBookingsPage() {
   const navigate = useNavigate()

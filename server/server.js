@@ -10,6 +10,7 @@ dotenv.config()
 const authRoutes = require('./routes/auth')
 const bookingRoutes = require('./routes/bookings')
 const userRoutes = require('./routes/users')
+const contactRoutes = require('./routes/contacts')
 
 // Initialize Express app
 const app = express()
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/bookings', bookingRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/contacts', contactRoutes)
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

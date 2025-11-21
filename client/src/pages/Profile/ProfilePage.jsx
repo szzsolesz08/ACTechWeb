@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import authService from '../services/authService'
-import userService from '../services/userService'
+import authService from '../../services/authService'
+import userService from '../../services/userService'
 import './ProfilePage.css'
 
 function ProfilePage() {

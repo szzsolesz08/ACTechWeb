@@ -132,6 +132,25 @@ function NavigationBar() {
                     Manage Bookings
                   </Link>
                 </li>
+                <li>
+                  <Link to="/admin/contacts" onClick={closeMobileMenu}>
+                    Manage Contacts
+                  </Link>
+                </li>
+              </ul>
+            )}
+            {currentUser?.role === 'technician' && (
+              <ul>
+                <li>
+                  <Link to="/technician/bookings" onClick={closeMobileMenu}>
+                    My Bookings
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/technician/contacts" onClick={closeMobileMenu}>
+                    My Contacts
+                  </Link>
+                </li>
               </ul>
             )}
           </ul>

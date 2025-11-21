@@ -13,8 +13,8 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts'
-import authService from '../services/authService'
-import bookingService from '../services/bookingService'
+import authService from '../../services/authService'
+import bookingService from '../../services/bookingService'
 import './AdminDashboardPage.css'
 
 function AdminDashboardPage() {

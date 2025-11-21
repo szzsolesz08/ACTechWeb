@@ -11,6 +11,8 @@ function ContactPage() {
   })
 
   const [formSubmitted, setFormSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState(null)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -20,17 +22,41 @@ function ContactPage() {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
-    setFormSubmitted(true)
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: '',
-    })
+    setIsSubmitting(true)
+    setError(null)
+
+    try {
+      const response = await fetch('http://localhost:5000/api/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit contact message')
+      }
+
+      console.log('Contact message submitted successfully:', data)
+      setFormSubmitted(true)
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: '',
+      })
+    } catch (err) {
+      console.error('Error submitting contact form:', err)
+      setError(err.message || 'Failed to submit message. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -85,6 +111,21 @@ function ContactPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
+              {error && (
+                <div
+                  className="form-error"
+                  style={{
+                    padding: '10px',
+                    marginBottom: '15px',
+                    backgroundColor: '#fee',
+                    border: '1px solid #fcc',
+                    borderRadius: '4px',
+                    color: '#c00',
+                  }}
+                >
+                  {error}
+                </div>
+              )}
               <div className="form-group">
                 <label htmlFor="name">Full Name</label>
                 <input
@@ -150,8 +191,12 @@ function ContactPage() {
                 ></textarea>
               </div>
 
-              <button type="submit" className="btn btn-primary">
-                Send Message
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           )}

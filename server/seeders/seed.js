@@ -3,6 +3,7 @@ require('dotenv').config()
 
 const seedUsers = require('./userSeeder')
 const seedBookings = require('./bookingSeeder')
+const seedContacts = require('./contactSeeder')
 
 const seedDatabase = async () => {
   try {
@@ -22,6 +23,9 @@ const seedDatabase = async () => {
     const createdBookings = await seedBookings(true)
     console.log('')
 
+    const createdContacts = await seedContacts(true)
+    console.log('')
+
     console.log('='.repeat(50))
     console.log('DATABASE SEEDING COMPLETED SUCCESSFULLY!')
     console.log('='.repeat(50))
@@ -36,6 +40,7 @@ const seedDatabase = async () => {
       `   - Admins: ${createdUsers.filter((u) => u.role === 'admin').length}`
     )
     console.log(`   Bookings: ${createdBookings.length}`)
+    console.log(`   Contact Messages: ${createdContacts.length}`)
 
     console.log('\n' + '='.repeat(50))
     console.log('You can now start the server with: npm start')

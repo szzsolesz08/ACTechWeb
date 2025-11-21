@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import bookingService from '../services/bookingService'
-import userService from '../services/userService'
-import authService from '../services/authService'
+import bookingService from '../../services/bookingService'
+import authService from '../../services/authService'
 import './BookingPage.css'
-import prices from '../utils/Prices'
-import units from '../utils/Units'
-import { generateInvoice } from '../utils/invoiceGenerator'
+import prices from '../../utils/Prices'
+import units from '../../utils/Units'
+import { generateInvoice } from '../../utils/invoiceGenerator'
 
 function BookingPage() {
   const location = useLocation()

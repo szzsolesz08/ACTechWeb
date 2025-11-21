@@ -1,8 +1,7 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import './PricesPage.css'
-import prices from '../utils/Prices.js'
-import units from '../utils/Units.js'
+import prices from '../../utils/Prices.js'
+import units from '../../utils/Units.js'
 
 function PricesPage() {
   return (
