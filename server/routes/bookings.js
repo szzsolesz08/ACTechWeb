@@ -188,6 +188,21 @@ router.post(
       let assignedTechnician = undefined
 
       if (preferredTechnician && preferredTechnician !== 'any') {
+        // First check if the preferred technician exists and is active
+        const technician = await User.findOne({
+          where: {
+            id: preferredTechnician,
+            role: 'technician'
+          }
+        })
+
+        if (!technician) {
+          return res.status(400).json({
+            error: 'The selected technician is no longer available. Please choose another technician or select "Any Available".',
+          })
+        }
+
+        // Then check if they are already booked for this time slot
         const existingBooking = await Booking.findOne({
           where: {
             date: bookingDate,
@@ -238,13 +253,19 @@ router.post(
           (b) => b.assignedTechnicianId
         )
 
-        const availableTechnician = allTechnicians.find(
+        const availableTechnicians = allTechnicians.filter(
           (tech) => !bookedTechnicianIds.includes(tech.id)
         )
 
-        if (availableTechnician) {
-          assignedTechnician = availableTechnician.id
+        if (availableTechnicians.length === 0) {
+          return res.status(400).json({
+            error: 'No technicians are available for this time slot. Please select a different time or date.',
+          })
         }
+
+        // Randomly assign one of the available technicians
+        const randomIndex = Math.floor(Math.random() * availableTechnicians.length)
+        assignedTechnician = availableTechnicians[randomIndex].id
       }
 
       const booking = await Booking.create({
@@ -258,6 +279,8 @@ router.post(
         customerAddress: address,
         description: description || 'No description provided',
         assignedTechnicianId: assignedTechnician,
+        // Price is optional but if provided we persist it; fallback to 0 to avoid NaN
+        price: Number(req.body.price) || 0,
       })
 
       console.log(
@@ -361,17 +384,19 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const [numRows, [booking]] = await Booking.update(
+      const numRows = await Booking.update(
         { status: req.body.status, updatedAt: Date.now() },
         {
-          where: { id: req.params.id },
-          returning: true,
+          where: { id: req.params.id }
         }
       )
 
-      if (!booking) {
+      if (numRows === 0) {
         return res.status(404).json({ error: 'Booking not found' })
       }
+
+      // Fetch the updated booking
+      const booking = await Booking.findByPk(req.params.id)
 
       res.json({ message: 'Booking status updated', booking })
     } catch (error) {
@@ -392,24 +417,27 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const [numRows, [booking]] = await Booking.update(
+      const numRows = await Booking.update(
         { assignedTechnicianId: req.body.technicianId, updatedAt: Date.now() },
         {
-          where: { id: req.params.id },
-          returning: true,
-          include: [
-            {
-              model: User,
-              as: 'assignedTechnician',
-              attributes: ['firstName', 'lastName', 'email'],
-            },
-          ],
+          where: { id: req.params.id }
         }
       )
 
-      if (!booking) {
+      if (numRows === 0) {
         return res.status(404).json({ error: 'Booking not found' })
       }
+
+      // Fetch the updated booking
+      const booking = await Booking.findByPk(req.params.id, {
+        include: [
+          {
+            model: User,
+            as: 'assignedTechnician',
+            attributes: ['firstName', 'lastName', 'email'],
+          },
+        ],
+      })
 
       res.json({ message: 'Technician assigned successfully', booking })
     } catch (error) {

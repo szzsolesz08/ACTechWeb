@@ -14,6 +14,8 @@ function TechnicianContactPage() {
   const [currentUser, setCurrentUser] = useState(null)
   const [editingNotes, setEditingNotes] = useState(null)
   const [notesText, setNotesText] = useState('')
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
   useEffect(() => {
     const user = authService.getCurrentUser()
@@ -39,9 +41,7 @@ function TechnicianContactPage() {
         if (!contact.assignedTo) {
           return false // Skip unassigned contacts
         }
-        const assignedToId =
-          contact.assignedTo._id?.toString() ||
-          contact.assignedTo.id?.toString()
+        const assignedToId = contact.assignedToId?.toString()
         const userId = currentUserId?.toString()
         return assignedToId === userId
       })
@@ -78,10 +78,19 @@ function TechnicianContactPage() {
   }
 
   const getFilteredContacts = () => {
-    if (filter === 'all') {
-      return contacts
+    let filtered = contacts.filter((c) => {
+      const contactDate = new Date(c.createdAt)
+      return (
+        contactDate.getMonth() === selectedMonth &&
+        contactDate.getFullYear() === selectedYear
+      )
+    })
+
+    if (filter !== 'all') {
+      filtered = filtered.filter((c) => c.status === filter)
     }
-    return contacts.filter((c) => c.status === filter)
+
+    return filtered
   }
 
   const getStatusBadgeClass = (status) => {
@@ -122,14 +131,39 @@ function TechnicianContactPage() {
 
   const filteredContacts = getFilteredContacts()
 
+  const monthContacts = contacts.filter((c) => {
+    const contactDate = new Date(c.createdAt)
+    return (
+      contactDate.getMonth() === selectedMonth &&
+      contactDate.getFullYear() === selectedYear
+    )
+  })
+
   const stats = {
-    total: contacts.length,
-    new: contacts.filter((c) => c.status === 'new').length,
-    read: contacts.filter((c) => c.status === 'read').length,
-    inProgress: contacts.filter((c) => c.status === 'in-progress').length,
-    resolved: contacts.filter((c) => c.status === 'resolved').length,
-    closed: contacts.filter((c) => c.status === 'closed').length,
+    total: monthContacts.length,
+    new: monthContacts.filter((c) => c.status === 'new').length,
+    read: monthContacts.filter((c) => c.status === 'read').length,
+    inProgress: monthContacts.filter((c) => c.status === 'in-progress').length,
+    resolved: monthContacts.filter((c) => c.status === 'resolved').length,
+    closed: monthContacts.filter((c) => c.status === 'closed').length,
   }
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+  const currentYear = new Date().getFullYear()
+  const years = [currentYear - 1, currentYear, currentYear + 1]
 
   return (
     <div className="technician-contact-page">
@@ -142,6 +176,42 @@ function TechnicianContactPage() {
       </div>
 
       {error && <div className="error-message">{error}</div>}
+
+      {/* Month and Year Selector */}
+      <div className="month-year-selector">
+        <div className="selector-group">
+          <label>Month:</label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+          >
+            {monthNames.map((month, index) => (
+              <option key={index} value={index}>
+                {month}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="selector-group">
+          <label>Year:</label>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="selected-period">
+          Showing messages from{' '}
+          <strong>
+            {monthNames[selectedMonth]} {selectedYear}
+          </strong>
+        </div>
+      </div>
 
       <div className="stats-grid">
         <div className="stat-card">
@@ -233,7 +303,7 @@ function TechnicianContactPage() {
               </tr>
             ) : (
               filteredContacts.map((contact) => (
-                <tr key={contact._id}>
+                <tr key={contact.id}>
                   <td className="date-cell">{formatDate(contact.createdAt)}</td>
                   <td className="name-cell">{contact.name}</td>
                   <td>
@@ -260,7 +330,7 @@ function TechnicianContactPage() {
                       className={`status-badge ${getStatusBadgeClass(contact.status)}`}
                       value={contact.status}
                       onChange={(e) =>
-                        handleStatusChange(contact._id, e.target.value)
+                        handleStatusChange(contact.id, e.target.value)
                       }
                     >
                       <option value="new">New</option>
@@ -350,7 +420,7 @@ function TechnicianContactPage() {
               </div>
               <div className="detail-group">
                 <label>Internal Notes:</label>
-                {editingNotes === selectedContact._id ? (
+                {editingNotes === selectedContact.id ? (
                   <div className="notes-edit">
                     <textarea
                       value={notesText}
@@ -361,7 +431,7 @@ function TechnicianContactPage() {
                     <div className="notes-actions">
                       <button
                         className="btn btn-primary btn-sm"
-                        onClick={() => handleSaveNotes(selectedContact._id)}
+                        onClick={() => handleSaveNotes(selectedContact.id)}
                       >
                         Save Notes
                       </button>
@@ -382,7 +452,7 @@ function TechnicianContactPage() {
                     <button
                       className="btn btn-secondary btn-sm"
                       onClick={() => {
-                        setEditingNotes(selectedContact._id)
+                        setEditingNotes(selectedContact.id)
                         setNotesText(selectedContact.notes || '')
                       }}
                     >
@@ -396,7 +466,7 @@ function TechnicianContactPage() {
               <button
                 className="btn-action btn-start"
                 onClick={() => {
-                  handleStatusChange(selectedContact._id, 'in-progress')
+                  handleStatusChange(selectedContact.id, 'in-progress')
                   setSelectedContact(null)
                 }}
                 disabled={
@@ -409,7 +479,7 @@ function TechnicianContactPage() {
               <button
                 className="btn-action btn-complete"
                 onClick={() => {
-                  handleStatusChange(selectedContact._id, 'resolved')
+                  handleStatusChange(selectedContact.id, 'resolved')
                   setSelectedContact(null)
                 }}
                 disabled={

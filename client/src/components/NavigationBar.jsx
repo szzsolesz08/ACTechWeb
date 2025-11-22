@@ -204,16 +204,6 @@ function NavigationBar() {
                   My Profile
                 </Link>
               )}
-              {currentUser?.role === 'admin' && (
-                <Link to="/admin/dashboard" className="nav-profile">
-                  Dashboard
-                </Link>
-              )}
-              {currentUser?.role === 'technician' && (
-                <Link to="/technician/bookings" className="nav-profile">
-                  My Bookings
-                </Link>
-              )}
               <button className="nav-logout" onClick={handleLogout}>
                 Logout
               </button>

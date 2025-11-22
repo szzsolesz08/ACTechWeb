@@ -20,6 +20,57 @@
   color: #6c757d;
 }
 
+.month-year-selector {
+  max-width: 1400px;
+  margin: 0 auto 30px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+}
+
+.selector-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selector-group label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.selector-group select {
+  padding: 8px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #495057;
+  background: white;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.selector-group select:hover,
+.selector-group select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.selected-period {
+  margin-left: auto;
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+.selected-period strong {
+  color: #212529;
+}
+
 .error-message {
   max-width: 1400px;
   margin: 0 auto 20px;

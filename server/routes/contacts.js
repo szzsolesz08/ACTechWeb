@@ -118,17 +118,18 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const [numRows, [contact]] = await Contact.update(
+      const numRows = await Contact.update(
         { status: req.body.status, updatedAt: Date.now() },
         {
-          where: { id: req.params.id },
-          returning: true
+          where: { id: req.params.id }
         }
       )
 
-      if (!contact) {
+      if (numRows === 0) {
         return res.status(404).json({ error: 'Contact message not found' })
       }
+
+      const contact = await Contact.findByPk(req.params.id)
 
       res.json({ message: 'Contact status updated', contact })
     } catch (error) {
@@ -149,15 +150,18 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const [numRows, [contact]] = await Contact.update(
+      const numRows = await Contact.update(
         { assignedToId: req.body.userId, updatedAt: Date.now() },
         {
-          where: { id: req.params.id },
-          returning: true
+          where: { id: req.params.id }
         }
-      );
+      )
 
-      const updatedContact = await Contact.findByPk(req.params.id, {
+      if (numRows === 0) {
+        return res.status(404).json({ error: 'Contact message not found' })
+      }
+
+      const contact = await Contact.findByPk(req.params.id, {
         include: [{
           model: User,
           as: 'assignedTo',
@@ -165,11 +169,7 @@ router.patch(
         }]
       })
 
-      if (!contact) {
-        return res.status(404).json({ error: 'Contact message not found' })
-      }
-
-      res.json({ message: 'Contact assigned successfully', contact: updatedContact })
+      res.json({ message: 'Contact assigned successfully', contact })
     } catch (error) {
       console.error('Error assigning contact:', error)
       res.status(500).json({ error: 'Server error assigning contact' })
@@ -188,17 +188,18 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const [numRows, [contact]] = await Contact.update(
+      const numRows = await Contact.update(
         { notes: req.body.notes, updatedAt: Date.now() },
         {
-          where: { id: req.params.id },
-          returning: true
+          where: { id: req.params.id }
         }
       )
 
-      if (!contact) {
+      if (numRows === 0) {
         return res.status(404).json({ error: 'Contact message not found' })
       }
+
+      const contact = await Contact.findByPk(req.params.id)
 
       res.json({ message: 'Contact notes updated', contact })
     } catch (error) {

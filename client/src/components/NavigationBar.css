@@ -225,7 +225,7 @@ body.menu-open {
   transition: all 0.3s ease;
 }
 
-@media (max-width: 1113px) {
+@media (max-width: 1238px) {
   .nav-auth {
     display: none;
   }
@@ -289,7 +289,7 @@ body.menu-open {
     flex-direction: column;
     gap: 15px;
     margin-top: 30px;
-    padding: 0 20px;
+    padding: 0 20px 40px;
     align-items: center;
   }
 

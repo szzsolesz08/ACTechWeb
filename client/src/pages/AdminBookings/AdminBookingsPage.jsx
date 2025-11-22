@@ -344,8 +344,8 @@ function AdminBookingsPage() {
                     {booking.unit && (
                       <div className="unit-info">
                         Unit:{' '}
-                        {units.find((u) => u.id === booking.unit)?.name ||
-                          `#${booking.unit}`}
+                        {units.find((u) => u.id === Number(booking.unit))
+                          ?.name || `#${booking.unit}`}
                       </div>
                     )}
                   </td>
@@ -374,7 +374,7 @@ function AdminBookingsPage() {
                   <td>
                     <select
                       className="technician-select"
-                      value={booking.assignedTechnician?.id || ''}
+                      value={booking.assignedTechnicianId || ''}
                       onChange={(e) =>
                         handleAssignTechnician(booking.id, e.target.value)
                       }
@@ -462,8 +462,8 @@ function AdminBookingsPage() {
                 <div className="detail-group">
                   <label>AC Unit:</label>
                   <p>
-                    {units.find((u) => u.id === selectedBooking.unit)?.name ||
-                      `Unit #${selectedBooking.unit}`}
+                    {units.find((u) => u.id === Number(selectedBooking.unit))
+                      ?.name || `Unit #${selectedBooking.unit}`}
                   </p>
                 </div>
               )}

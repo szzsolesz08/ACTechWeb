@@ -15,6 +15,8 @@ function AdminContactPage() {
   const [selectedContact, setSelectedContact] = useState(null)
   const [editingNotes, setEditingNotes] = useState(null)
   const [notesText, setNotesText] = useState('')
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
   useEffect(() => {
     const user = authService.getCurrentUser()
@@ -94,10 +96,19 @@ function AdminContactPage() {
   }
 
   const getFilteredContacts = () => {
-    if (filter === 'all') {
-      return contacts
+    let filtered = contacts.filter((c) => {
+      const contactDate = new Date(c.createdAt)
+      return (
+        contactDate.getMonth() === selectedMonth &&
+        contactDate.getFullYear() === selectedYear
+      )
+    })
+
+    if (filter !== 'all') {
+      filtered = filtered.filter((c) => c.status === filter)
     }
-    return contacts.filter((c) => c.status === filter)
+
+    return filtered
   }
 
   const getStatusBadgeClass = (status) => {
@@ -138,14 +149,39 @@ function AdminContactPage() {
 
   const filteredContacts = getFilteredContacts()
 
+  const monthContacts = contacts.filter((c) => {
+    const contactDate = new Date(c.createdAt)
+    return (
+      contactDate.getMonth() === selectedMonth &&
+      contactDate.getFullYear() === selectedYear
+    )
+  })
+
   const stats = {
-    total: contacts.length,
-    new: contacts.filter((c) => c.status === 'new').length,
-    read: contacts.filter((c) => c.status === 'read').length,
-    inProgress: contacts.filter((c) => c.status === 'in-progress').length,
-    resolved: contacts.filter((c) => c.status === 'resolved').length,
-    closed: contacts.filter((c) => c.status === 'closed').length,
+    total: monthContacts.length,
+    new: monthContacts.filter((c) => c.status === 'new').length,
+    read: monthContacts.filter((c) => c.status === 'read').length,
+    inProgress: monthContacts.filter((c) => c.status === 'in-progress').length,
+    resolved: monthContacts.filter((c) => c.status === 'resolved').length,
+    closed: monthContacts.filter((c) => c.status === 'closed').length,
   }
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+  const currentYear = new Date().getFullYear()
+  const years = [currentYear - 1, currentYear, currentYear + 1]
 
   return (
     <div className="contact-messages-page">
@@ -155,6 +191,42 @@ function AdminContactPage() {
       </div>
 
       {error && <div className="error-message">{error}</div>}
+
+      {/* Month and Year Selector */}
+      <div className="month-year-selector">
+        <div className="selector-group">
+          <label>Month:</label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+          >
+            {monthNames.map((month, index) => (
+              <option key={index} value={index}>
+                {month}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="selector-group">
+          <label>Year:</label>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="selected-period">
+          Showing messages from{' '}
+          <strong>
+            {monthNames[selectedMonth]} {selectedYear}
+          </strong>
+        </div>
+      </div>
 
       <div className="stats-grid">
         <div className="stat-card">
@@ -295,7 +367,7 @@ function AdminContactPage() {
                   <td>
                     <select
                       className="staff-select"
-                      value={contact.assignedTo?.id || ''}
+                      value={contact.assignedToId || ''}
                       onChange={(e) =>
                         handleAssignStaff(contact.id, e.target.value)
                       }

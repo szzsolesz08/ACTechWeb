@@ -167,7 +167,7 @@ function BookingPage() {
           bookingData.timeSlot
         )
         const isStillAvailable = response.availableTechnicians.some(
-          (tech) => tech.id === bookingData.preferredTechnician
+          (tech) => tech.id === Number(bookingData.preferredTechnician)
         )
 
         if (!isStillAvailable) {
@@ -196,12 +196,14 @@ function BookingPage() {
         unit: bookingData.unit,
         date: bookingData.date,
         timeSlot: bookingData.timeSlot,
-        customerName: bookingData.name,
-        customerEmail: bookingData.email,
-        customerPhone: bookingData.phone,
-        customerAddress: bookingData.address,
+        // These field names must match the backend validators in server/routes/bookings.js
+        name: bookingData.name,
+        email: bookingData.email,
+        phone: bookingData.phone,
+        address: bookingData.address,
         description: bookingData.description,
-        preferredTechnicianId:
+        preferredTechnician:
+          bookingData.preferredTechnician &&
           bookingData.preferredTechnician !== 'any'
             ? bookingData.preferredTechnician
             : null,

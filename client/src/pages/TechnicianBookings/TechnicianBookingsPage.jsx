@@ -12,6 +12,8 @@ function TechnicianBookingsPage() {
   const [filter, setFilter] = useState('all')
   const [selectedBooking, setSelectedBooking] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
   useEffect(() => {
     // Check if user is technician
@@ -35,32 +37,15 @@ function TechnicianBookingsPage() {
       // User object has 'id' field, not '_id'
       const currentUserId = user.id || user._id
 
-      console.log('Current user:', user)
-      console.log('Current user ID:', currentUserId)
-      console.log('All bookings:', response.bookings)
-
       const myBookings = (response.bookings || []).filter((booking) => {
         if (!booking.assignedTechnician) {
           return false // Skip unassigned bookings
         }
-        const assignedTechId =
-          booking.assignedTechnician._id?.toString() ||
-          booking.assignedTechnician.id?.toString()
+        const assignedTechId = booking.assignedTechnicianId?.toString()
         const userId = currentUserId?.toString()
-        console.log(
-          'Comparing booking',
-          booking.referenceNumber,
-          ':',
-          assignedTechId,
-          'with',
-          userId,
-          '=',
-          assignedTechId === userId
-        )
         return assignedTechId === userId
       })
 
-      console.log('Filtered bookings for technician:', myBookings)
       setBookings(myBookings)
     } catch (err) {
       console.error('Error fetching bookings:', err)
@@ -82,8 +67,19 @@ function TechnicianBookingsPage() {
   }
 
   const getFilteredBookings = () => {
-    if (filter === 'all') return bookings
-    return bookings.filter((b) => b.status === filter)
+    let filtered = bookings.filter((b) => {
+      const bookingDate = new Date(b.date)
+      return (
+        bookingDate.getMonth() === selectedMonth &&
+        bookingDate.getFullYear() === selectedYear
+      )
+    })
+
+    if (filter !== 'all') {
+      filtered = filtered.filter((b) => b.status === filter)
+    }
+
+    return filtered
   }
 
   const getStatusBadgeClass = (status) => {
@@ -110,14 +106,39 @@ function TechnicianBookingsPage() {
   }
 
   const filteredBookings = getFilteredBookings()
+  const monthBookings = bookings.filter((b) => {
+    const bookingDate = new Date(b.date)
+    return (
+      bookingDate.getMonth() === selectedMonth &&
+      bookingDate.getFullYear() === selectedYear
+    )
+  })
+
   const stats = {
-    total: bookings.length,
-    pending: bookings.filter((b) => b.status === 'pending').length,
-    confirmed: bookings.filter((b) => b.status === 'confirmed').length,
-    inProgress: bookings.filter((b) => b.status === 'in-progress').length,
-    completed: bookings.filter((b) => b.status === 'completed').length,
-    cancelled: bookings.filter((b) => b.status === 'cancelled').length,
+    total: monthBookings.length,
+    pending: monthBookings.filter((b) => b.status === 'pending').length,
+    confirmed: monthBookings.filter((b) => b.status === 'confirmed').length,
+    inProgress: monthBookings.filter((b) => b.status === 'in-progress').length,
+    completed: monthBookings.filter((b) => b.status === 'completed').length,
+    cancelled: monthBookings.filter((b) => b.status === 'cancelled').length,
   }
+
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+  const currentYear = new Date().getFullYear()
+  const years = [currentYear - 1, currentYear, currentYear + 1]
 
   return (
     <div className="technician-bookings-page">
@@ -129,6 +150,42 @@ function TechnicianBookingsPage() {
       </div>
 
       {error && <div className="error-message">{error}</div>}
+
+      {/* Month and Year Selector */}
+      <div className="month-year-selector">
+        <div className="selector-group">
+          <label>Month:</label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+          >
+            {monthNames.map((month, index) => (
+              <option key={index} value={index}>
+                {month}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="selector-group">
+          <label>Year:</label>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="selected-period">
+          Showing jobs from{' '}
+          <strong>
+            {monthNames[selectedMonth]} {selectedYear}
+          </strong>
+        </div>
+      </div>
 
       {/* Statistics Cards */}
       <div className="stats-grid">
@@ -223,18 +280,18 @@ function TechnicianBookingsPage() {
               </tr>
             ) : (
               filteredBookings.map((booking) => (
-                <tr key={booking._id}>
+                <tr key={booking.id}>
                   <td className="ref-number">{booking.referenceNumber}</td>
                   <td>
                     <div className="customer-info">
                       <div className="customer-name">
-                        {booking.customerInfo.name}
+                        {booking.customerName}
                       </div>
                       <div className="customer-email">
-                        {booking.customerInfo.email}
+                        {booking.customerEmail}
                       </div>
                       <div className="customer-phone">
-                        {booking.customerInfo.phone}
+                        {booking.customerPhone}
                       </div>
                     </div>
                   </td>
@@ -253,14 +310,24 @@ function TechnicianBookingsPage() {
                       className={`status-badge ${getStatusBadgeClass(booking.status)}`}
                       value={booking.status}
                       onChange={(e) =>
-                        handleStatusChange(booking._id, e.target.value)
+                        handleStatusChange(booking.id, e.target.value)
                       }
                     >
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="completed">Completed</option>
-                      <option value="cancelled">Cancelled</option>
+                      <option key="pending" value="pending">
+                        Pending
+                      </option>
+                      <option key="confirmed" value="confirmed">
+                        Confirmed
+                      </option>
+                      <option key="in-progress" value="in-progress">
+                        In Progress
+                      </option>
+                      <option key="completed" value="completed">
+                        Completed
+                      </option>
+                      <option key="cancelled" value="cancelled">
+                        Cancelled
+                      </option>
                     </select>
                   </td>
                   <td>
@@ -298,19 +365,19 @@ function TechnicianBookingsPage() {
               </div>
               <div className="detail-group">
                 <label>Customer Name:</label>
-                <p>{selectedBooking.customerInfo.name}</p>
+                <p>{selectedBooking.customerName}</p>
               </div>
               <div className="detail-group">
                 <label>Email:</label>
-                <p>{selectedBooking.customerInfo.email}</p>
+                <p>{selectedBooking.customerEmail}</p>
               </div>
               <div className="detail-group">
                 <label>Phone:</label>
-                <p>{selectedBooking.customerInfo.phone}</p>
+                <p>{selectedBooking.customerPhone}</p>
               </div>
               <div className="detail-group">
                 <label>Service Address:</label>
-                <p>{selectedBooking.customerInfo.address}</p>
+                <p>{selectedBooking.customerAddress}</p>
               </div>
               <div className="detail-group">
                 <label>Service Type:</label>
@@ -358,7 +425,7 @@ function TechnicianBookingsPage() {
               <button
                 className="btn-action btn-start"
                 onClick={() => {
-                  handleStatusChange(selectedBooking._id, 'in-progress')
+                  handleStatusChange(selectedBooking.id, 'in-progress')
                   setSelectedBooking(null)
                 }}
                 disabled={
@@ -371,7 +438,7 @@ function TechnicianBookingsPage() {
               <button
                 className="btn-action btn-complete"
                 onClick={() => {
-                  handleStatusChange(selectedBooking._id, 'completed')
+                  handleStatusChange(selectedBooking.id, 'completed')
                   setSelectedBooking(null)
                 }}
                 disabled={
