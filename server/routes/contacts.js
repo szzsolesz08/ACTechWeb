@@ -1,8 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const { body, validationResult } = require('express-validator')
-const Contact = require('../models/Contact')
-const auth = require('../middleware/auth')
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import Contact from '../models/Contact.js';
+import User from '../models/User.js';
+import auth from '../middleware/auth.js';
+
+const router = express.Router();
 
 router.post(
   '/',
@@ -23,20 +25,18 @@ router.post(
 
       const { name, email, phone, subject, message } = req.body
 
-      const contact = new Contact({
+      const contact = await Contact.create({
         name,
         email,
         phone: phone || '',
         subject,
-        message,
+        message
       })
-
-      await contact.save()
 
       res.status(201).json({
         message: 'Contact message received successfully',
         contact: {
-          id: contact._id,
+          id: contact.id,
           name: contact.name,
           email: contact.email,
           subject: contact.subject,
@@ -61,9 +61,19 @@ router.get('/', auth, async (req, res) => {
     if (status) filter.status = status
     if (subject) filter.subject = subject
 
-    const contacts = await Contact.find(filter)
-      .populate('assignedTo', 'firstName lastName email')
-      .sort({ createdAt: -1 })
+    const whereClause = {};
+    if (status) whereClause.status = status;
+    if (subject) whereClause.subject = subject;
+
+    const contacts = await Contact.findAll({
+      where: whereClause,
+      include: [{
+        model: User,
+        as: 'assignedTo',
+        attributes: ['firstName', 'lastName', 'email']
+      }],
+      order: [['createdAt', 'DESC']]
+    })
 
     res.json({ contacts })
   } catch (error) {
@@ -74,10 +84,13 @@ router.get('/', auth, async (req, res) => {
 
 router.get('/:id', auth, async (req, res) => {
   try {
-    const contact = await Contact.findById(req.params.id).populate(
-      'assignedTo',
-      'firstName lastName email'
-    )
+    const contact = await Contact.findByPk(req.params.id, {
+      include: [{
+        model: User,
+        as: 'assignedTo',
+        attributes: ['firstName', 'lastName', 'email']
+      }]
+    })
 
     if (!contact) {
       return res.status(404).json({ error: 'Contact message not found' })
@@ -105,10 +118,12 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const contact = await Contact.findByIdAndUpdate(
-        req.params.id,
+      const [numRows, [contact]] = await Contact.update(
         { status: req.body.status, updatedAt: Date.now() },
-        { new: true }
+        {
+          where: { id: req.params.id },
+          returning: true
+        }
       )
 
       if (!contact) {
@@ -134,17 +149,27 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const contact = await Contact.findByIdAndUpdate(
-        req.params.id,
-        { assignedTo: req.body.userId, updatedAt: Date.now() },
-        { new: true }
-      ).populate('assignedTo', 'firstName lastName email')
+      const [numRows, [contact]] = await Contact.update(
+        { assignedToId: req.body.userId, updatedAt: Date.now() },
+        {
+          where: { id: req.params.id },
+          returning: true
+        }
+      );
+
+      const updatedContact = await Contact.findByPk(req.params.id, {
+        include: [{
+          model: User,
+          as: 'assignedTo',
+          attributes: ['firstName', 'lastName', 'email']
+        }]
+      })
 
       if (!contact) {
         return res.status(404).json({ error: 'Contact message not found' })
       }
 
-      res.json({ message: 'Contact assigned successfully', contact })
+      res.json({ message: 'Contact assigned successfully', contact: updatedContact })
     } catch (error) {
       console.error('Error assigning contact:', error)
       res.status(500).json({ error: 'Server error assigning contact' })
@@ -163,10 +188,12 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const contact = await Contact.findByIdAndUpdate(
-        req.params.id,
+      const [numRows, [contact]] = await Contact.update(
         { notes: req.body.notes, updatedAt: Date.now() },
-        { new: true }
+        {
+          where: { id: req.params.id },
+          returning: true
+        }
       )
 
       if (!contact) {
@@ -183,7 +210,10 @@ router.patch(
 
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const contact = await Contact.findByIdAndDelete(req.params.id)
+    const contact = await Contact.findByPk(req.params.id);
+    if (contact) {
+      await contact.destroy();
+    }
 
     if (!contact) {
       return res.status(404).json({ error: 'Contact message not found' })
@@ -196,4 +226,4 @@ router.delete('/:id', auth, async (req, res) => {
   }
 })
 
-module.exports = router
+export default router;

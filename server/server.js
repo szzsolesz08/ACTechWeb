@@ -1,16 +1,17 @@
-const express = require('express')
-const cors = require('cors')
-const dotenv = require('dotenv')
-const mongoose = require('mongoose')
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import sequelize from './config/database.js';
+import './models/associations.js';
 
 // Load environment variables
-dotenv.config()
+dotenv.config();
 
 // Import routes
-const authRoutes = require('./routes/auth')
-const bookingRoutes = require('./routes/bookings')
-const userRoutes = require('./routes/users')
-const contactRoutes = require('./routes/contacts')
+import authRoutes from './routes/auth.js';
+import bookingRoutes from './routes/bookings.js';
+import userRoutes from './routes/users.js';
+import contactRoutes from './routes/contacts.js';
 
 // Initialize Express app
 const app = express()
@@ -62,16 +63,14 @@ app.use((req, res) => {
   })
 })
 
-// MongoDB Connection
+// Database Connection
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    console.log('MongoDB connected successfully')
+    await sequelize.authenticate()
+    await sequelize.sync()
+    console.log('MySQL connected successfully')
   } catch (error) {
-    console.error('MongoDB connection error:', error)
+    console.error('Database connection error:', error)
     process.exit(1)
   }
 }
@@ -86,4 +85,4 @@ connectDB().then(() => {
   })
 })
 
-module.exports = app
+export default app;

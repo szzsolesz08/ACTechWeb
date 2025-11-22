@@ -1,11 +1,14 @@
-const express = require('express')
-const router = express.Router()
-const User = require('../models/User')
-const auth = require('../middleware/auth')
+import express from 'express';
+import User from '../models/User.js';
+import auth from '../middleware/auth.js';
+
+const router = express.Router();
 
 router.get('/profile', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password')
+    const user = await User.findByPk(req.user.userId, {
+      attributes: { exclude: ['password'] }
+    })
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' })
@@ -32,10 +35,15 @@ router.put('/profile', auth, async (req, res) => {
       updatedAt: Date.now(),
     }
 
-    const user = await User.findByIdAndUpdate(req.user.userId, updateData, {
-      new: true,
-      runValidators: true,
-    }).select('-password')
+    const [numRows, [user]] = await User.update(updateData, {
+      where: { id: req.user.userId },
+      returning: true,
+      validate: true
+    })
+
+    const updatedUser = await User.findByPk(req.user.userId, {
+      attributes: { exclude: ['password'] }
+    })
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' })
@@ -44,15 +52,15 @@ router.put('/profile', auth, async (req, res) => {
     res.json({
       message: 'Profile updated successfully',
       user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
-        address: user.address,
-        city: user.city,
-        zipCode: user.zipCode,
-        role: user.role,
+        id: updatedUser.id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        address: updatedUser.address,
+        city: updatedUser.city,
+        zipCode: updatedUser.zipCode,
+        role: updatedUser.role,
       },
     })
   } catch (error) {
@@ -63,9 +71,10 @@ router.put('/profile', auth, async (req, res) => {
 
 router.get('/technicians', async (req, res) => {
   try {
-    const technicians = await User.find({ role: 'technician' }).select(
-      'firstName lastName email'
-    )
+    const technicians = await User.findAll({
+      where: { role: 'technician' },
+      attributes: ['id', 'firstName', 'lastName', 'email']
+    })
 
     res.json({ technicians })
   } catch (error) {
@@ -74,4 +83,4 @@ router.get('/technicians', async (req, res) => {
   }
 })
 
-module.exports = router
+export default router;

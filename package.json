@@ -28,8 +28,11 @@
       "prettier --write"
     ],
     "server/**/*.js": [
-      "eslint --fix",
-      "prettier --write"
+      "eslint --fix"
     ]
+  },
+  "dependencies": {
+    "mysql2": "^3.15.3",
+    "sequelize": "^6.37.7"
   }
 }

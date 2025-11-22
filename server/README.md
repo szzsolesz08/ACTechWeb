@@ -1,13 +1,13 @@
 # ACTechWeb - Server
 
-Backend API for AC Technician Services booking platform built with Node.js, Express, and MongoDB.
+Backend API for AC Technician Services booking platform built with Node.js, Express, and MySQL.
 
 ## 🚀 Tech Stack
 
 - **Node.js** - JavaScript runtime
 - **Express** - Web framework
-- **MongoDB** - NoSQL database
-- **Mongoose** - MongoDB ODM
+- **MySQL** - Relational database
+- **Sequelize** - MySQL ORM
 - **JWT** - Authentication
 - **bcryptjs** - Password hashing
 - **express-validator** - Input validation
@@ -16,7 +16,7 @@ Backend API for AC Technician Services booking platform built with Node.js, Expr
 ## 📋 Prerequisites
 
 - Node.js (v16 or higher)
-- MongoDB (local installation)
+- MySQL (local installation)
 - npm or yarn
 
 ## 🛠️ Installation

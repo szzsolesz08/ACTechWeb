@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
+import authService from '../../services/authService'
 import './ContactPage.css'
 
 function ContactPage() {
+  const currentUser = authService.getCurrentUser()
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    name: currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : '',
+    email: currentUser?.email || '',
+    phone: currentUser?.phone || '',
     subject: '',
     message: '',
   })
@@ -111,6 +114,12 @@ function ContactPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
+              {currentUser && (
+                <p className="info-text">
+                  Your information has been prefilled from your account. You can
+                  edit it if needed.
+                </p>
+              )}
               {error && (
                 <div
                   className="form-error"

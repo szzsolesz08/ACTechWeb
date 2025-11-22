@@ -1,8 +1,9 @@
-const express = require('express')
-const router = express.Router()
-const { body, validationResult } = require('express-validator')
-const jwt = require('jsonwebtoken')
-const User = require('../models/User')
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+
+const router = express.Router();
 
 router.post(
   '/register',
@@ -42,14 +43,14 @@ router.post(
         zipCode,
       } = req.body
 
-      const existingUser = await User.findOne({ email })
+      const existingUser = await User.findOne({ where: { email } })
       if (existingUser) {
         return res
           .status(400)
           .json({ error: 'User with this email already exists' })
       }
 
-      const user = new User({
+      const user = await User.create({
         firstName,
         lastName,
         email,
@@ -57,13 +58,11 @@ router.post(
         phone,
         address,
         city,
-        zipCode,
+        zipCode
       })
 
-      await user.save()
-
       const token = jwt.sign(
-        { userId: user._id, email: user.email, role: user.role },
+        { userId: user.id, email: user.email, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       )
@@ -72,7 +71,7 @@ router.post(
         message: 'User registered successfully',
         token,
         user: {
-          id: user._id,
+          id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
@@ -105,7 +104,7 @@ router.post(
 
       const { email, password } = req.body
 
-      const user = await User.findOne({ email })
+      const user = await User.findOne({ where: { email } })
       if (!user) {
         return res.status(401).json({ error: 'Invalid email or password' })
       }
@@ -115,7 +114,7 @@ router.post(
         return res.status(401).json({ error: 'Invalid email or password' })
       }
       const token = jwt.sign(
-        { userId: user._id, email: user.email, role: user.role },
+        { userId: user.id, email: user.email, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       )
@@ -124,7 +123,7 @@ router.post(
         message: 'Login successful',
         token,
         user: {
-          id: user._id,
+          id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
@@ -142,4 +141,4 @@ router.post(
   }
 )
 
-module.exports = router
+export default router;

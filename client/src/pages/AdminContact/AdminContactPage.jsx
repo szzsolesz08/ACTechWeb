@@ -238,14 +238,14 @@ function AdminContactPage() {
           </thead>
           <tbody>
             {filteredContacts.length === 0 ? (
-              <tr>
+              <tr key="no-contacts">
                 <td colSpan="8" className="no-contacts">
                   No contact messages found
                 </td>
               </tr>
             ) : (
               filteredContacts.map((contact) => (
-                <tr key={contact._id}>
+                <tr key={contact.id}>
                   <td className="date-cell">{formatDate(contact.createdAt)}</td>
                   <td className="name-cell">{contact.name}</td>
                   <td>
@@ -272,27 +272,39 @@ function AdminContactPage() {
                       className={`status-badge ${getStatusBadgeClass(contact.status)}`}
                       value={contact.status}
                       onChange={(e) =>
-                        handleStatusChange(contact._id, e.target.value)
+                        handleStatusChange(contact.id, e.target.value)
                       }
                     >
-                      <option value="new">New</option>
-                      <option value="read">Read</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="resolved">Resolved</option>
-                      <option value="closed">Closed</option>
+                      <option key="new" value="new">
+                        New
+                      </option>
+                      <option key="read" value="read">
+                        Read
+                      </option>
+                      <option key="in-progress" value="in-progress">
+                        In Progress
+                      </option>
+                      <option key="resolved" value="resolved">
+                        Resolved
+                      </option>
+                      <option key="closed" value="closed">
+                        Closed
+                      </option>
                     </select>
                   </td>
                   <td>
                     <select
                       className="staff-select"
-                      value={contact.assignedTo?._id || ''}
+                      value={contact.assignedTo?.id || ''}
                       onChange={(e) =>
-                        handleAssignStaff(contact._id, e.target.value)
+                        handleAssignStaff(contact.id, e.target.value)
                       }
                     >
-                      <option value="">Not Assigned</option>
+                      <option key="not-assigned" value="">
+                        Not Assigned
+                      </option>
                       {staff.map((person) => (
-                        <option key={person._id} value={person._id}>
+                        <option key={person.id} value={person.id}>
                           {person.firstName} {person.lastName}
                         </option>
                       ))}
@@ -379,7 +391,7 @@ function AdminContactPage() {
               )}
               <div className="detail-group">
                 <label>Internal Notes:</label>
-                {editingNotes === selectedContact._id ? (
+                {editingNotes === selectedContact.id ? (
                   <div className="notes-edit">
                     <textarea
                       value={notesText}
@@ -390,7 +402,7 @@ function AdminContactPage() {
                     <div className="notes-actions">
                       <button
                         className="btn btn-primary btn-sm"
-                        onClick={() => handleSaveNotes(selectedContact._id)}
+                        onClick={() => handleSaveNotes(selectedContact.id)}
                       >
                         Save
                       </button>
@@ -411,7 +423,7 @@ function AdminContactPage() {
                     <button
                       className="btn btn-secondary btn-sm"
                       onClick={() => {
-                        setEditingNotes(selectedContact._id)
+                        setEditingNotes(selectedContact.id)
                         setNotesText(selectedContact.notes || '')
                       }}
                     >
@@ -424,7 +436,7 @@ function AdminContactPage() {
             <div className="modal-footer">
               <button
                 className="btn btn-danger"
-                onClick={() => handleDeleteContact(selectedContact._id)}
+                onClick={() => handleDeleteContact(selectedContact.id)}
               >
                 Delete Message
               </button>

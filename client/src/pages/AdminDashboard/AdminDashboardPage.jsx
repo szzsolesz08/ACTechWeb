@@ -79,7 +79,7 @@ function AdminDashboardPage() {
         booking.status === 'completed' &&
         booking.price
       ) {
-        monthlySales[bookingMonth].sales += booking.price
+        monthlySales[bookingMonth].sales += Number(booking.price) || 0
         monthlySales[bookingMonth].bookings += 1
       }
     })
@@ -143,7 +143,7 @@ function AdminDashboardPage() {
   const monthlySalesData = getMonthlySalesData()
   const monthlyStatusData = getMonthlyStatusData()
   const totalYearlySales = monthlySalesData.reduce(
-    (sum, month) => sum + month.sales,
+    (sum, month) => sum + Number(month.sales),
     0
   )
   const totalYearlyBookings = monthlySalesData.reduce(
@@ -195,7 +195,7 @@ function AdminDashboardPage() {
         <div className="summary-card">
           <div className="card-icon">💰</div>
           <div className="card-content">
-            <h3>{totalYearlySales.toLocaleString('hu-HU')} Ft</h3>
+            <h3>{Number(totalYearlySales).toLocaleString('hu-HU')} Ft</h3>
             <p>Total Sales ({selectedYear})</p>
           </div>
         </div>
@@ -212,7 +212,7 @@ function AdminDashboardPage() {
             <h3>
               {totalYearlyBookings > 0
                 ? Math.round(
-                    totalYearlySales / totalYearlyBookings
+                    Number(totalYearlySales) / Number(totalYearlyBookings)
                   ).toLocaleString('hu-HU')
                 : 0}{' '}
               Ft

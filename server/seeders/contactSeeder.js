@@ -1,70 +1,53 @@
-const mongoose = require('mongoose')
-const Contact = require('../models/Contact')
-const User = require('../models/User')
-const getContactsData = require('./data/contacts')
-require('dotenv').config()
+import Contact from '../models/Contact.js';
+import User from '../models/User.js';
+import getContactsData from './data/contacts.js';
+import dotenv from 'dotenv';
+import sequelize from '../config/database.js';
 
-const seedContacts = async (skipConnection = false) => {
+dotenv.config(); // assuming you have a db config file
+
+const seedContacts = async (skipSync = false) => {
   try {
-    if (!skipConnection) {
-      await mongoose.connect(process.env.MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      })
-      console.log('MongoDB connected for seeding contacts...')
+    const technicians = await User.findAll({ where: { role: 'technician' } });
+
+    if (technicians.length === 0) {
+      console.log('Please run userSeeder first to create users!');
+      throw new Error('No technicians found. Run userSeeder first.');
     }
 
-    const users = await User.find()
+    const contacts = getContactsData(technicians);
+    const createdContacts = await Contact.bulkCreate(contacts);
+    console.log(`${createdContacts.length} contacts seeded successfully!`);
 
-    if (users.length === 0) {
-      console.log('Please run userSeeder first to create users!')
-      throw new Error('No users found. Run userSeeder first.')
-    }
+    const statusCounts = await Contact.findAll({
+      attributes: [
+        'status',
+        [sequelize.fn('COUNT', sequelize.col('status')), 'count']
+      ],
+      group: ['status']
+    });
 
-    await Contact.deleteMany({})
-    console.log('Existing contacts cleared')
-
-    const contacts = getContactsData(users)
-
-    const createdContacts = await Contact.insertMany(contacts)
-    console.log(
-      `${createdContacts.length} contact messages seeded successfully!`
-    )
-
-    const statusCounts = await Contact.aggregate([
-      { $group: { _id: '$status', count: { $sum: 1 } } },
-    ])
-
-    console.log('\nContact Message Statistics:')
+    console.log('\nContact Statistics:');
     statusCounts.forEach((stat) => {
-      console.log(`- ${stat._id}: ${stat.count}`)
-    })
+      console.log(`- ${stat.status}: ${stat.getDataValue('count')}`);
+    });
 
-    const subjectCounts = await Contact.aggregate([
-      { $group: { _id: '$subject', count: { $sum: 1 } } },
-    ])
+    console.log('\nSample Contact Messages:');
+    createdContacts.slice(0, 5).forEach((contact) => {
+      console.log(`- ${contact.name} (${contact.subject}) - ${contact.status}`);
+    });
 
-    console.log('\nContact Messages by Subject:')
-    subjectCounts.forEach((stat) => {
-      console.log(`- ${stat._id}: ${stat.count}`)
-    })
-
-    console.log('\nSample Contact Messages:')
-    createdContacts.slice(0, 3).forEach((contact) => {
-      console.log(`- ${contact.name} (${contact.subject}) - ${contact.status}`)
-    })
-
-    return createdContacts
+    return createdContacts;
   } catch (error) {
-    console.error('Error seeding contacts:', error)
-    throw error
+    console.error('Error seeding contacts:', error);
+    throw error;
   }
-}
+};
 
-if (require.main === module) {
+if (process.argv[1] === new URL(import.meta.url).pathname) {
   seedContacts()
     .then(() => process.exit(0))
-    .catch(() => process.exit(1))
+    .catch(() => process.exit(1));
 }
 
-module.exports = seedContacts
+export default seedContacts;

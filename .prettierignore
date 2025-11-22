@@ -1,6 +1,18 @@
+# Dependencies
 node_modules
+
+# Build outputs
 dist
 build
+
+# Misc
 .git
 *.log
 package-lock.json
+
+# Cache
+.eslintcache
+.prettier*
+
+# Coverage
+coverage

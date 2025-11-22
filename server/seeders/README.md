@@ -41,7 +41,7 @@ Seeds only bookings (requires users to exist first):
 npm run seed:bookings
 ```
 
-Creates 12 bookings with different:
+Creates 400 bookings with different:
 
 - Service types (installation, repair, maintenance, etc.)
 - Statuses (pending, confirmed, in-progress, completed, cancelled)
@@ -83,14 +83,13 @@ After seeding, you can log in with these accounts:
 - **Admin (1)**:
   - Admin User - Budapest
 
-### Bookings (12 total)
+### Bookings (400 total)
 
-- **Pending (3)**: Future bookings awaiting confirmation
-- **Confirmed (2)**: Future bookings with assigned technicians
-- **In-Progress (1)**: Current booking being worked on
-- **Completed (4)**: Past bookings successfully finished
-- **Cancelled (1)**: Cancelled booking
-- **Maintenance Plans (2)**: Basic and Premium plan bookings
+- **Pending (6)**: Future bookings awaiting confirmation
+- **Confirmed (6)**: Future bookings with assigned technicians
+- **In-Progress (5)**: Current bookings being worked on
+- **Completed (320)**: Past bookings successfully finished
+- **Cancelled (63)**: Cancelled bookings
 
 ## Booking Types Included
 
@@ -123,7 +122,7 @@ Seeders provide consistent test data for:
 
 ## Important Notes
 
-⚠️ **Warning**: Running seeders will **DELETE ALL EXISTING DATA** in the users and bookings collections.
+⚠️ **Warning**: Running seeders will **DELETE ALL EXISTING DATA** in the users, bookings, and contacts tables.
 
 ✅ **Safe for Development**: Seeders are designed for development and testing environments only.
 
@@ -140,11 +139,11 @@ Then run the appropriate seeder script.
 
 ## Troubleshooting
 
-### "MongoDB connection error"
+### "MySQL connection error"
 
-- Make sure MongoDB is running
-- Check your `.env` file has correct `MONGODB_URI`
-- Verify MongoDB service: `net start MongoDB`
+- Make sure MySQL is running
+- Check your MySQL credentials in `config/database.js`
+- Verify MySQL service: `net start MySQL`
 
 ### "Please run userSeeder first"
 
@@ -152,7 +151,7 @@ Then run the appropriate seeder script.
 - Run `npm run seed:users` first, then `npm run seed:bookings`
 - Or use `npm run seed` to do both
 
-### "Duplicate key error"
+### "Foreign key constraint error"
 
-- Database already has data with same email/reference
-- Clear the database first or use `npm run seed` which clears automatically
+- Tables must be dropped in the correct order due to foreign key constraints
+- Use `npm run seed` which handles this automatically

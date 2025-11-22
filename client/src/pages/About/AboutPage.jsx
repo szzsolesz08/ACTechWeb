@@ -42,7 +42,7 @@ function AboutPage() {
         <div className="team-grid">
           <div className="team-member">
             <div className="member-image placeholder"></div>
-            <h4>John Smith</h4>
+            <h4>Mike Johnson</h4>
             <p className="member-title">Founder & Lead Technician</p>
             <p>
               Over 25 years of experience in HVAC systems with certifications in
@@ -53,7 +53,7 @@ function AboutPage() {
 
           <div className="team-member">
             <div className="member-image placeholder"></div>
-            <h4>Sarah Johnson</h4>
+            <h4>Sarah Williams</h4>
             <p className="member-title">Senior Technician</p>
             <p>
               Specializing in commercial systems with 15 years of industry
@@ -64,23 +64,12 @@ function AboutPage() {
 
           <div className="team-member">
             <div className="member-image placeholder"></div>
-            <h4>Mike Davis</h4>
+            <h4>David Martinez</h4>
             <p className="member-title">Installation Specialist</p>
             <p>
               Expert in new system installations and complex retrofits. Mike
               ensures every installation is completed to the highest standards
               with attention to detail.
-            </p>
-          </div>
-
-          <div className="team-member">
-            <div className="member-image placeholder"></div>
-            <h4>Lisa Chen</h4>
-            <p className="member-title">Customer Service Manager</p>
-            <p>
-              Ensuring our customers receive prompt and professional assistance.
-              Lisa coordinates our service team and maintains our commitment to
-              customer satisfaction.
             </p>
           </div>
         </div>

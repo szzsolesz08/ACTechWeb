@@ -1,57 +1,61 @@
-const mongoose = require('mongoose')
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../config/database.js';
 
-const contactSchema = new mongoose.Schema({
+class Contact extends Model {}
+
+Contact.init({
   name: {
-    type: String,
-    required: [true, 'Name is required'],
-    trim: true,
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Name is required' }
+    }
   },
   email: {
-    type: String,
-    required: [true, 'Email is required'],
-    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
-    trim: true,
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Email is required' },
+      isEmail: { msg: 'Please enter a valid email' }
+    }
   },
   phone: {
-    type: String,
-    trim: true,
+    type: DataTypes.STRING
   },
   subject: {
-    type: String,
-    required: [true, 'Subject is required'],
-    enum: ['quote', 'service', 'support', 'feedback', 'other'],
+    type: DataTypes.ENUM('quote', 'service', 'support', 'feedback', 'other'),
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Subject is required' }
+    }
   },
   message: {
-    type: String,
-    required: [true, 'Message is required'],
+    type: DataTypes.TEXT,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Message is required' }
+    }
   },
   status: {
-    type: String,
-    enum: ['new', 'read', 'in-progress', 'resolved', 'closed'],
-    default: 'new',
+    type: DataTypes.ENUM('new', 'read', 'in-progress', 'resolved', 'closed'),
+    defaultValue: 'new'
   },
-  assignedTo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: false,
+  assignedToId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
   },
   notes: {
-    type: String,
-    default: '',
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-})
+    type: DataTypes.TEXT,
+    defaultValue: ''
+  }
+}, {
+  sequelize,
+  modelName: 'Contact',
+  timestamps: true
+});
 
-contactSchema.pre('save', function (next) {
-  this.updatedAt = Date.now()
-  next()
-})
-
-module.exports = mongoose.model('Contact', contactSchema)
+export default Contact;

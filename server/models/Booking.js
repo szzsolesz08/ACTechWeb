@@ -1,107 +1,133 @@
-const mongoose = require('mongoose')
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../config/database.js';
 
-const bookingSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: false,
+class Booking extends Model {}
+
+Booking.init({
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
   },
   referenceNumber: {
-    type: String,
-    unique: true,
+    type: DataTypes.STRING,
+    unique: true
   },
   serviceType: {
-    type: String,
-    required: [true, 'Service type is required'],
-    enum: [
+    type: DataTypes.ENUM(
       'installation',
       'repair',
       'maintenance',
       'maintenance-plan',
       'inspection',
-      'consultation',
-    ],
+      'consultation'
+    ),
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Service type is required' }
+    }
   },
   maintenancePlan: {
-    type: String,
-    enum: ['basic', 'premium', ''],
-    default: '',
+    type: DataTypes.ENUM('basic', 'premium', ''),
+    defaultValue: ''
   },
   unit: {
-    type: Number,
-    required: false,
+    type: DataTypes.INTEGER,
+    allowNull: true
   },
   price: {
-    type: Number,
-    required: false,
-    default: 0,
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    defaultValue: 0
   },
   date: {
-    type: Date,
-    required: [true, 'Date is required'],
+    type: DataTypes.DATEONLY,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Date is required' }
+    }
   },
   timeSlot: {
-    type: String,
-    required: [true, 'Time slot is required'],
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Time slot is required' }
+    }
   },
-  customerInfo: {
-    name: {
-      type: String,
-      required: [true, 'Customer name is required'],
-    },
-    email: {
-      type: String,
-      required: [true, 'Email is required'],
-      match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
-    },
-    phone: {
-      type: String,
-      required: [true, 'Phone number is required'],
-    },
-    address: {
-      type: String,
-      required: [true, 'Address is required'],
-    },
+  customerName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Customer name is required' }
+    }
+  },
+  customerEmail: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Email is required' },
+      isEmail: { msg: 'Please enter a valid email' }
+    }
+  },
+  customerPhone: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Phone number is required' }
+    }
+  },
+  customerAddress: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Address is required' }
+    }
   },
   description: {
-    type: String,
-    required: [true, 'Description is required'],
+    type: DataTypes.TEXT,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Description is required' }
+    }
   },
-  preferredTechnician: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: false,
+  preferredTechnicianId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
   },
-  assignedTechnician: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: false,
+  assignedTechnicianId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
   },
   status: {
-    type: String,
-    enum: ['pending', 'confirmed', 'in-progress', 'completed', 'cancelled'],
-    default: 'pending',
+    type: DataTypes.ENUM('pending', 'confirmed', 'in-progress', 'completed', 'cancelled'),
+    defaultValue: 'pending'
   },
   notes: {
-    type: String,
-    default: '',
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-})
-
-bookingSchema.pre('save', function (next) {
-  if (!this.referenceNumber) {
-    this.referenceNumber = 'AC' + Math.floor(100000 + Math.random() * 900000)
+    type: DataTypes.TEXT,
+    defaultValue: ''
   }
-  this.updatedAt = Date.now()
-  next()
-})
+}, {
+  sequelize,
+  modelName: 'Booking',
+  timestamps: true,
+  hooks: {
+    beforeCreate: (booking) => {
+      if (!booking.referenceNumber) {
+        booking.referenceNumber = 'AC' + Math.floor(100000 + Math.random() * 900000);
+      }
+    }
+  }
+});
 
-module.exports = mongoose.model('Booking', bookingSchema)
+export default Booking;

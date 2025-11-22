@@ -126,12 +126,12 @@ function AdminBookingsPage() {
       maintenancePlan: booking.maintenancePlan || '',
       date: booking.date,
       timeSlot: booking.timeSlot,
-      name: booking.customerInfo.name,
-      email: booking.customerInfo.email,
-      phone: booking.customerInfo.phone,
-      address: booking.customerInfo.address,
+      name: booking.customerName,
+      email: booking.customerEmail,
+      phone: booking.customerPhone,
+      address: booking.customerAddress,
       description: booking.description,
-      price: booking.price || 0,
+      price: Number(booking.price) || 0,
     }
 
     generateInvoice(
@@ -319,18 +319,18 @@ function AdminBookingsPage() {
               </tr>
             ) : (
               filteredBookings.map((booking) => (
-                <tr key={booking._id}>
+                <tr key={booking.id}>
                   <td className="ref-number">{booking.referenceNumber}</td>
                   <td>
                     <div className="customer-info">
                       <div className="customer-name">
-                        {booking.customerInfo.name}
+                        {booking.customerName}
                       </div>
                       <div className="customer-email">
-                        {booking.customerInfo.email}
+                        {booking.customerEmail}
                       </div>
                       <div className="customer-phone">
-                        {booking.customerInfo.phone}
+                        {booking.customerPhone}
                       </div>
                     </div>
                   </td>
@@ -350,8 +350,8 @@ function AdminBookingsPage() {
                     )}
                   </td>
                   <td className="price-cell">
-                    {booking.price
-                      ? `${booking.price.toLocaleString('hu-HU')} Ft`
+                    {Number(booking.price)
+                      ? `${Number(booking.price).toLocaleString('hu-HU')} Ft`
                       : 'N/A'}
                   </td>
                   <td>{formatDate(booking.date)}</td>
@@ -361,7 +361,7 @@ function AdminBookingsPage() {
                       className={`status-badge ${getStatusBadgeClass(booking.status)}`}
                       value={booking.status}
                       onChange={(e) =>
-                        handleStatusChange(booking._id, e.target.value)
+                        handleStatusChange(booking.id, e.target.value)
                       }
                     >
                       <option value="pending">Pending</option>
@@ -374,14 +374,14 @@ function AdminBookingsPage() {
                   <td>
                     <select
                       className="technician-select"
-                      value={booking.assignedTechnician?._id || ''}
+                      value={booking.assignedTechnician?.id || ''}
                       onChange={(e) =>
-                        handleAssignTechnician(booking._id, e.target.value)
+                        handleAssignTechnician(booking.id, e.target.value)
                       }
                     >
                       <option value="">Not Assigned</option>
                       {technicians.map((tech) => (
-                        <option key={tech._id} value={tech._id}>
+                        <option key={tech.id} value={tech.id}>
                           {tech.firstName} {tech.lastName}
                         </option>
                       ))}
@@ -430,19 +430,19 @@ function AdminBookingsPage() {
               </div>
               <div className="detail-group">
                 <label>Customer Name:</label>
-                <p>{selectedBooking.customerInfo.name}</p>
+                <p>{selectedBooking.customerName}</p>
               </div>
               <div className="detail-group">
                 <label>Email:</label>
-                <p>{selectedBooking.customerInfo.email}</p>
+                <p>{selectedBooking.customerEmail}</p>
               </div>
               <div className="detail-group">
                 <label>Phone:</label>
-                <p>{selectedBooking.customerInfo.phone}</p>
+                <p>{selectedBooking.customerPhone}</p>
               </div>
               <div className="detail-group">
                 <label>Address:</label>
-                <p>{selectedBooking.customerInfo.address}</p>
+                <p>{selectedBooking.customerAddress}</p>
               </div>
               <div className="detail-group">
                 <label>Service Type:</label>
@@ -471,7 +471,7 @@ function AdminBookingsPage() {
                 <div className="detail-group">
                   <label>Price:</label>
                   <p className="price-highlight">
-                    {selectedBooking.price.toLocaleString('hu-HU')} Ft
+                    {Number(selectedBooking.price).toLocaleString('hu-HU')} Ft
                   </p>
                 </div>
               )}

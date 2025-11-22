@@ -1,79 +1,73 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
+import { DataTypes, Model } from 'sequelize';
+import bcrypt from 'bcryptjs';
+import sequelize from '../config/database.js';
 
-const userSchema = new mongoose.Schema({
+class User extends Model {
+  async comparePassword(candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+  }
+}
+
+User.init({
   firstName: {
-    type: String,
-    required: [true, 'First name is required'],
-    trim: true,
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'First name is required' }
+    }
   },
   lastName: {
-    type: String,
-    required: [true, 'Last name is required'],
-    trim: true,
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'Last name is required' }
+    }
   },
   email: {
-    type: String,
-    required: [true, 'Email is required'],
+    type: DataTypes.STRING,
+    allowNull: false,
     unique: true,
-    lowercase: true,
-    trim: true,
-    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
+    validate: {
+      isEmail: { msg: 'Please enter a valid email' },
+      notEmpty: { msg: 'Email is required' }
+    }
   },
   password: {
-    type: String,
-    required: [true, 'Password is required'],
-    minlength: [8, 'Password must be at least 8 characters'],
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      len: { args: [8], msg: 'Password must be at least 8 characters' },
+      notEmpty: { msg: 'Password is required' }
+    }
   },
   phone: {
-    type: String,
-    trim: true,
+    type: DataTypes.STRING
   },
   address: {
-    type: String,
-    trim: true,
+    type: DataTypes.STRING
   },
   city: {
-    type: String,
-    trim: true,
+    type: DataTypes.STRING
   },
   zipCode: {
-    type: String,
-    trim: true,
+    type: DataTypes.STRING
   },
   role: {
-    type: String,
-    enum: ['customer', 'technician', 'admin'],
-    default: 'customer',
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-})
-
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next()
-
-  try {
-    const salt = await bcrypt.genSalt(10)
-    this.password = await bcrypt.hash(this.password, salt)
-    next()
-  } catch (error) {
-    next(error)
+    type: DataTypes.ENUM('customer', 'technician', 'admin'),
+    defaultValue: 'customer'
   }
-})
+}, {
+  sequelize,
+  modelName: 'User',
+  timestamps: true,
+  hooks: {
+    beforeSave: async (user) => {
+      if (user.changed('password')) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(user.password, salt);
+      }
+    }
+  }
+});
 
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password)
-}
-userSchema.pre('save', function (next) {
-  this.updatedAt = Date.now()
-  next()
-})
-
-module.exports = mongoose.model('User', userSchema)
+export default User;

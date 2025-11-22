@@ -1,4 +1,4 @@
-const { faker } = require('@faker-js/faker')
+import { faker } from '@faker-js/faker';
 
 const serviceTypes = [
   { value: 'installation', name: 'Installation' },
@@ -150,16 +150,14 @@ const generateBooking = (customers, technicians, year) => {
   }
 
   const booking = {
-    user: customer._id,
+    userId: customer.id,
     serviceType,
     date,
     timeSlot: getRandomElement(timeSlots),
-    customerInfo: {
-      name: `${customer.firstName} ${customer.lastName}`,
-      email: customer.email,
-      phone: customer.phone,
-      address: `${customer.address}, ${customer.city}`,
-    },
+    customerName: `${customer.firstName} ${customer.lastName}`,
+    customerEmail: customer.email,
+    customerPhone: customer.phone,
+    customerAddress: `${customer.address}, ${customer.city}`,
     status,
   }
 
@@ -185,11 +183,11 @@ const generateBooking = (customers, technicians, year) => {
   )
 
   if (['confirmed', 'in-progress', 'completed'].includes(status)) {
-    booking.assignedTechnician = getRandomElement(technicians)._id
+    booking.assignedTechnicianId = getRandomElement(technicians).id
   }
 
   if (status === 'pending' && Math.random() > 0.5) {
-    booking.preferredTechnician = getRandomElement(technicians)._id
+    booking.preferredTechnicianId = getRandomElement(technicians).id
   }
 
   if (status === 'in-progress') {
@@ -226,7 +224,7 @@ const generateBooking = (customers, technicians, year) => {
   return booking
 }
 
-module.exports = (customers, technicians) => {
+export default (customers, technicians) => {
   const bookings = []
 
   for (let i = 0; i < 200; i++) {

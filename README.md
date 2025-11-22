@@ -28,8 +28,8 @@ ACTechWeb/
 
 - Node.js
 - Express
-- MongoDB
-- Mongoose
+- MySQL
+- Sequelize
 - JWT Authentication
 
 ## ⚡ Quick Start
@@ -37,7 +37,7 @@ ACTechWeb/
 ### Prerequisites
 
 - Node.js (v16 or higher)
-- MongoDB (local)
+- MySQL (local)
 - npm or yarn
 
 ### Installation
@@ -150,7 +150,7 @@ npm run dev
 Both client and server require `.env` files. See individual README files for details:
 
 - Client: `VITE_API_URL`
-- Server: `PORT`, `MONGODB_URI`, `JWT_SECRET`, `NODE_ENV`
+- Server: `PORT`, `JWT_SECRET`, `NODE_ENV`
 
 ## 📦 Available Scripts
 

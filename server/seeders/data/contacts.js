@@ -1,4 +1,4 @@
-const { faker } = require('@faker-js/faker')
+import { faker } from '@faker-js/faker';
 
 const subjects = ['quote', 'service', 'support', 'feedback', 'other']
 
@@ -139,7 +139,7 @@ const generateContact = (users) => {
       (u) => u.role === 'admin' || u.role === 'technician'
     )
     if (staffMembers.length > 0) {
-      contact.assignedTo = getRandomElement(staffMembers)._id
+      contact.assignedToId = getRandomElement(staffMembers).id
     }
   }
 
@@ -149,7 +149,7 @@ const generateContact = (users) => {
   return contact
 }
 
-module.exports = (users) => {
+export default (users) => {
   const contacts = []
 
   // Generate 50 contact messages

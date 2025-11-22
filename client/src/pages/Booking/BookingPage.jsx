@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import bookingService from '../../services/bookingService'
 import authService from '../../services/authService'
@@ -167,7 +167,7 @@ function BookingPage() {
           bookingData.timeSlot
         )
         const isStillAvailable = response.availableTechnicians.some(
-          (tech) => tech._id === bookingData.preferredTechnician
+          (tech) => tech.id === bookingData.preferredTechnician
         )
 
         if (!isStillAvailable) {
@@ -191,8 +191,21 @@ function BookingPage() {
         serviceTypes.find((s) => s.id == bookingData.serviceType)?.value || ''
 
       const bookingPayload = {
-        ...bookingData,
         serviceType: serviceTypeValue,
+        maintenancePlan: bookingData.maintenancePlan,
+        unit: bookingData.unit,
+        date: bookingData.date,
+        timeSlot: bookingData.timeSlot,
+        customerName: bookingData.name,
+        customerEmail: bookingData.email,
+        customerPhone: bookingData.phone,
+        customerAddress: bookingData.address,
+        description: bookingData.description,
+        preferredTechnicianId:
+          bookingData.preferredTechnician !== 'any'
+            ? bookingData.preferredTechnician
+            : null,
+        price: bookingData.price,
       }
 
       const response = await bookingService.createBooking(bookingPayload)
@@ -271,14 +284,6 @@ function BookingPage() {
       description:
         '4 quarterly check-ups, priority emergency service, 20% discount on repairs, free filter replacements',
     },
-  ]
-
-  const timeSlots = [
-    '8:00 - 10:00',
-    '10:00 - 12:00',
-    '12:00 - 14:00',
-    '14:00 - 16:00',
-    '16:00 - 18:00',
   ]
 
   const tomorrow = new Date()
@@ -481,14 +486,14 @@ function BookingPage() {
                 </label>
                 {availableTechnicians.map((tech) => (
                   <label
-                    key={tech._id}
-                    className={`technician-option ${bookingData.preferredTechnician === tech._id ? 'selected' : ''}`}
+                    key={tech.id}
+                    className={`technician-option ${bookingData.preferredTechnician === tech.id ? 'selected' : ''}`}
                   >
                     <input
                       type="radio"
                       name="preferredTechnician"
-                      value={tech._id}
-                      checked={bookingData.preferredTechnician === tech._id}
+                      value={tech.id}
+                      checked={bookingData.preferredTechnician === tech.id}
                       onChange={handleChange}
                     />
                     {tech.firstName} {tech.lastName}

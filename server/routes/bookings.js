@@ -1,9 +1,11 @@
-const express = require('express')
+import express from 'express'
+import { body, validationResult } from 'express-validator'
+import { Op } from 'sequelize'
+import Booking from '../models/Booking.js'
+import User from '../models/User.js'
+import auth from '../middleware/auth.js'
+
 const router = express.Router()
-const { body, validationResult } = require('express-validator')
-const Booking = require('../models/Booking')
-const User = require('../models/User')
-const auth = require('../middleware/auth')
 
 router.get('/availability/timeslots', async (req, res) => {
   try {
@@ -13,11 +15,9 @@ router.get('/availability/timeslots', async (req, res) => {
       return res.status(400).json({ error: 'Date is required' })
     }
 
-    const searchDate = new Date(date)
-    searchDate.setHours(0, 0, 0, 0)
-
-    const nextDay = new Date(searchDate)
-    nextDay.setDate(nextDay.getDate() + 1)
+    const dateObj = new Date(date)
+    // Convert to YYYY-MM-DD format for DATEONLY comparison
+    const searchDate = dateObj.toISOString().split('T')[0]
 
     const allTimeSlots = [
       '8:00 - 10:00',
@@ -27,31 +27,35 @@ router.get('/availability/timeslots', async (req, res) => {
       '16:00 - 18:00',
     ]
 
-    const totalTechnicians = await User.countDocuments({ role: 'technician' })
+    const totalTechnicians = await User.count({ where: { role: 'technician' } })
 
-    const bookingsOnDate = await Booking.find({
-      date: {
-        $gte: searchDate,
-        $lt: nextDay,
+    const bookingsOnDate = await Booking.findAll({
+      where: {
+        date: searchDate,
       },
-      status: { $ne: 'cancelled' },
     })
 
-    console.log(
-      `Found ${bookingsOnDate.length} bookings for ${searchDate.toISOString()}`
-    )
+    console.log(`Found ${bookingsOnDate.length} bookings for ${searchDate}`)
 
+    // Initialize counts for each time slot
     const timeSlotCounts = {}
     allTimeSlots.forEach((slot) => {
-      timeSlotCounts[slot] = bookingsOnDate.filter(
-        (b) => b.timeSlot === slot
-      ).length
+      const bookingsInSlot = bookingsOnDate.filter(
+        (b) => b.timeSlot === slot && b.status !== 'cancelled'
+      )
+      timeSlotCounts[slot] = bookingsInSlot.length
+      console.log(`Time slot ${slot}: ${bookingsInSlot.length} bookings`)
     })
 
     console.log('Time slot counts:', timeSlotCounts)
 
+    console.log('Total technicians:', totalTechnicians)
     const availableTimeSlots = allTimeSlots.filter((slot) => {
-      return timeSlotCounts[slot] < totalTechnicians
+      const isAvailable = timeSlotCounts[slot] < totalTechnicians
+      console.log(
+        `Time slot ${slot}: ${isAvailable ? 'available' : 'fully booked'} (${timeSlotCounts[slot]}/${totalTechnicians})`
+      )
+      return isAvailable
     })
 
     res.json({
@@ -73,44 +77,56 @@ router.get('/availability/technicians', async (req, res) => {
       return res.status(400).json({ error: 'Date and time slot are required' })
     }
 
-    const searchDate = new Date(date)
-    searchDate.setHours(0, 0, 0, 0)
-
-    const nextDay = new Date(searchDate)
-    nextDay.setDate(nextDay.getDate() + 1)
+    // Convert to YYYY-MM-DD format for DATEONLY comparison
+    const searchDate = new Date(date).toISOString().split('T')[0]
 
     console.log('Checking availability for:', { date: searchDate, timeSlot })
 
-    const allTechnicians = await User.find({ role: 'technician' }).select(
-      '_id firstName lastName email'
-    )
+    const totalTechnicians = await User.count({ where: { role: 'technician' } })
+    console.log('Total technicians:', totalTechnicians)
 
-    const bookedTechnicians = await Booking.find({
-      date: {
-        $gte: searchDate,
-        $lt: nextDay,
-      },
-      timeSlot: timeSlot,
-      status: { $ne: 'cancelled' },
-      assignedTechnician: { $exists: true, $ne: null },
+    const allTechnicians = await User.findAll({
+      where: { role: 'technician' },
+      attributes: ['id', 'firstName', 'lastName', 'email'],
     })
-      .select('assignedTechnician')
-      .populate('assignedTechnician', 'firstName lastName')
+
+    const bookedTechnicians = await Booking.findAll({
+      where: {
+        date: searchDate,
+        timeSlot: timeSlot,
+        status: {
+          [Op.ne]: 'cancelled',
+        },
+        assignedTechnicianId: {
+          [Op.not]: null,
+        },
+      },
+      attributes: ['assignedTechnicianId'],
+      include: [
+        {
+          model: User,
+          as: 'assignedTechnician',
+          attributes: ['firstName', 'lastName'],
+        },
+      ],
+    })
 
     console.log(
       'Booked technicians:',
       bookedTechnicians.map((b) => ({
-        id: b.assignedTechnician._id,
-        name: `${b.assignedTechnician.firstName} ${b.assignedTechnician.lastName}`,
+        id: b.assignedTechnicianId,
+        name: b.assignedTechnician
+          ? `${b.assignedTechnician.firstName} ${b.assignedTechnician.lastName}`
+          : 'Unknown',
       }))
     )
 
-    const bookedTechnicianIds = bookedTechnicians.map((b) =>
-      b.assignedTechnician._id.toString()
+    const bookedTechnicianIds = bookedTechnicians.map(
+      (b) => b.assignedTechnicianId
     )
 
     const availableTechnicians = allTechnicians.filter(
-      (tech) => !bookedTechnicianIds.includes(tech._id.toString())
+      (tech) => !bookedTechnicianIds.includes(tech.id)
     )
 
     console.log(
@@ -160,11 +176,8 @@ router.post(
         preferredTechnician,
       } = req.body
 
-      const bookingDate = new Date(date)
-      bookingDate.setHours(0, 0, 0, 0)
-
-      const nextDay = new Date(bookingDate)
-      nextDay.setDate(nextDay.getDate() + 1)
+      // Convert to YYYY-MM-DD format for DATEONLY field
+      const bookingDate = new Date(date).toISOString().split('T')[0]
 
       console.log('Creating booking for:', {
         date: bookingDate,
@@ -176,13 +189,14 @@ router.post(
 
       if (preferredTechnician && preferredTechnician !== 'any') {
         const existingBooking = await Booking.findOne({
-          date: {
-            $gte: bookingDate,
-            $lt: nextDay,
+          where: {
+            date: bookingDate,
+            timeSlot: timeSlot,
+            assignedTechnicianId: preferredTechnician,
+            status: {
+              [Op.ne]: 'cancelled',
+            },
           },
-          timeSlot: timeSlot,
-          assignedTechnician: preferredTechnician,
-          status: { $ne: 'cancelled' },
         })
 
         console.log(
@@ -201,54 +215,55 @@ router.post(
 
         assignedTechnician = preferredTechnician
       } else {
-        const allTechnicians = await User.find({ role: 'technician' }).select(
-          '_id'
-        )
+        const allTechnicians = await User.findAll({
+          where: { role: 'technician' },
+          attributes: ['id'],
+        })
 
-        const bookedTechnicians = await Booking.find({
-          date: {
-            $gte: bookingDate,
-            $lt: nextDay,
+        const bookedTechnicians = await Booking.findAll({
+          where: {
+            date: bookingDate,
+            timeSlot: timeSlot,
+            status: {
+              [Op.ne]: 'cancelled',
+            },
+            assignedTechnicianId: {
+              [Op.not]: null,
+            },
           },
-          timeSlot: timeSlot,
-          status: { $ne: 'cancelled' },
-          assignedTechnician: { $exists: true, $ne: null },
-        }).select('assignedTechnician')
+          attributes: ['assignedTechnicianId'],
+        })
 
-        const bookedTechnicianIds = bookedTechnicians.map((b) =>
-          b.assignedTechnician.toString()
+        const bookedTechnicianIds = bookedTechnicians.map(
+          (b) => b.assignedTechnicianId
         )
 
         const availableTechnician = allTechnicians.find(
-          (tech) => !bookedTechnicianIds.includes(tech._id.toString())
+          (tech) => !bookedTechnicianIds.includes(tech.id)
         )
 
         if (availableTechnician) {
-          assignedTechnician = availableTechnician._id
+          assignedTechnician = availableTechnician.id
         }
       }
 
-      const booking = new Booking({
+      const booking = await Booking.create({
         serviceType,
         maintenancePlan: maintenancePlan || '',
         date: bookingDate,
         timeSlot,
-        customerInfo: {
-          name,
-          email,
-          phone,
-          address,
-        },
+        customerName: name,
+        customerEmail: email,
+        customerPhone: phone,
+        customerAddress: address,
         description: description || 'No description provided',
-        assignedTechnician: assignedTechnician,
+        assignedTechnicianId: assignedTechnician,
       })
 
       console.log(
         'Saving booking with assigned technician:',
         assignedTechnician
       )
-
-      await booking.save()
 
       res.status(201).json({
         message: 'Booking created successfully',
@@ -281,9 +296,22 @@ router.get('/', auth, async (req, res) => {
     if (date) filter.date = { $gte: new Date(date) }
     if (serviceType) filter.serviceType = serviceType
 
-    const bookings = await Booking.find(filter)
-      .populate('assignedTechnician', 'firstName lastName email')
-      .sort({ date: 1 })
+    const whereClause = {}
+    if (status) whereClause.status = status
+    if (date) whereClause.date = new Date(date).toISOString().split('T')[0]
+    if (serviceType) whereClause.serviceType = serviceType
+
+    const bookings = await Booking.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: User,
+          as: 'assignedTechnician',
+          attributes: ['firstName', 'lastName', 'email'],
+        },
+      ],
+      order: [['date', 'ASC']],
+    })
 
     res.json({ bookings })
   } catch (error) {
@@ -295,8 +323,17 @@ router.get('/', auth, async (req, res) => {
 router.get('/:referenceNumber', async (req, res) => {
   try {
     const booking = await Booking.findOne({
-      referenceNumber: req.params.referenceNumber,
-    }).populate('assignedTechnician', 'firstName lastName email phone')
+      where: {
+        referenceNumber: req.params.referenceNumber,
+      },
+      include: [
+        {
+          model: User,
+          as: 'assignedTechnician',
+          attributes: ['firstName', 'lastName', 'email', 'phone'],
+        },
+      ],
+    })
 
     if (!booking) {
       return res.status(404).json({ error: 'Booking not found' })
@@ -324,10 +361,12 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const booking = await Booking.findByIdAndUpdate(
-        req.params.id,
+      const [numRows, [booking]] = await Booking.update(
         { status: req.body.status, updatedAt: Date.now() },
-        { new: true }
+        {
+          where: { id: req.params.id },
+          returning: true,
+        }
       )
 
       if (!booking) {
@@ -353,11 +392,20 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const booking = await Booking.findByIdAndUpdate(
-        req.params.id,
-        { assignedTechnician: req.body.technicianId, updatedAt: Date.now() },
-        { new: true }
-      ).populate('assignedTechnician', 'firstName lastName email')
+      const [numRows, [booking]] = await Booking.update(
+        { assignedTechnicianId: req.body.technicianId, updatedAt: Date.now() },
+        {
+          where: { id: req.params.id },
+          returning: true,
+          include: [
+            {
+              model: User,
+              as: 'assignedTechnician',
+              attributes: ['firstName', 'lastName', 'email'],
+            },
+          ],
+        }
+      )
 
       if (!booking) {
         return res.status(404).json({ error: 'Booking not found' })
@@ -371,4 +419,4 @@ router.patch(
   }
 )
 
-module.exports = router
+export default router

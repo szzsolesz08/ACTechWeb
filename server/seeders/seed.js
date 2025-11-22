@@ -1,56 +1,75 @@
-const mongoose = require('mongoose')
-require('dotenv').config()
+import dotenv from 'dotenv';
+import { Sequelize } from 'sequelize';
+import sequelize from '../config/database.js';
+import seedUsers from './userSeeder.js';
+import seedBookings from './bookingSeeder.js';
+import seedContacts from './contactSeeder.js';
 
-const seedUsers = require('./userSeeder')
-const seedBookings = require('./bookingSeeder')
-const seedContacts = require('./contactSeeder')
+dotenv.config();
+
+const createDatabase = async () => {
+  const rootSequelize = new Sequelize('mysql://root:1234@127.0.0.1:3306');
+  try {
+    await rootSequelize.query('CREATE DATABASE IF NOT EXISTS actechweb;');
+    console.log('Database created or already exists');
+  } catch (error) {
+    console.error('Error creating database:', error);
+    throw error;
+  } finally {
+    await rootSequelize.close();
+  }
+};
 
 const seedDatabase = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    console.log('MongoDB connected for seeding...\n')
+    await createDatabase();
+    await sequelize.authenticate();
+    console.log('MySQL connected for seeding...\n');
 
-    console.log('='.repeat(50))
-    console.log('STARTING DATABASE SEEDING')
-    console.log('='.repeat(50) + '\n')
+    // Drop tables in correct order
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+    await sequelize.sync({ force: true });
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+    console.log('Database tables created\n');
 
-    const createdUsers = await seedUsers(true)
-    console.log('')
+    console.log('='.repeat(50));
+    console.log('STARTING DATABASE SEEDING');
+    console.log('='.repeat(50) + '\n');
 
-    const createdBookings = await seedBookings(true)
-    console.log('')
+    const createdUsers = await seedUsers(false);
+    console.log('');
 
-    const createdContacts = await seedContacts(true)
-    console.log('')
+    const createdBookings = await seedBookings(true);
+    console.log('');
 
-    console.log('='.repeat(50))
-    console.log('DATABASE SEEDING COMPLETED SUCCESSFULLY!')
-    console.log('='.repeat(50))
-    console.log(`   Users: ${createdUsers.length}`)
+    const createdContacts = await seedContacts(true);
+    console.log('');
+
+    console.log('='.repeat(50));
+    console.log('DATABASE SEEDING COMPLETED SUCCESSFULLY!');
+    console.log('='.repeat(50));
+    console.log(`   Users: ${createdUsers.length}`);
     console.log(
       `   - Customers: ${createdUsers.filter((u) => u.role === 'customer').length}`
-    )
+    );
     console.log(
       `   - Technicians: ${createdUsers.filter((u) => u.role === 'technician').length}`
-    )
+    );
     console.log(
       `   - Admins: ${createdUsers.filter((u) => u.role === 'admin').length}`
-    )
-    console.log(`   Bookings: ${createdBookings.length}`)
-    console.log(`   Contact Messages: ${createdContacts.length}`)
+    );
+    console.log(`   Bookings: ${createdBookings.length}`);
+    console.log(`   Contact Messages: ${createdContacts.length}`);
 
-    console.log('\n' + '='.repeat(50))
-    console.log('You can now start the server with: npm start')
-    console.log('='.repeat(50) + '\n')
+    console.log('\n' + '='.repeat(50));
+    console.log('You can now start the server with: npm start');
+    console.log('='.repeat(50) + '\n');
 
-    process.exit(0)
+    process.exit(0);
   } catch (error) {
-    console.error('Error seeding database:', error)
-    process.exit(1)
+    console.error('Error seeding database:', error);
+    process.exit(1);
   }
-}
+};
 
-seedDatabase()
+seedDatabase();
