@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import authService from '../../services/authService'
 import './AuthPage.css'
 
@@ -32,13 +32,22 @@ function LoginPage() {
         loginData.password
       )
       console.log('Login successful:', response.user)
-
       window.dispatchEvent(new Event('storage'))
-
       navigate('/')
     } catch (err) {
       console.error('Login error:', err)
-      setError(err.error || 'Login failed. Please check your credentials.')
+      // Clear password field on error
+      setLoginData((prev) => ({ ...prev, password: '' }))
+
+      if (err.response?.data?.message) {
+        setError(err.response.data.message)
+      } else if (err.response?.data?.error) {
+        setError(err.response.data.error)
+      } else if (err.error) {
+        setError(err.error)
+      } else {
+        setError('Login failed. Please check your credentials.')
+      }
     } finally {
       setLoading(false)
     }
@@ -95,7 +104,8 @@ function LoginPage() {
 
           <div className="auth-footer">
             <p>
-              Don't have an account? <a href="/register">Create an account</a>
+              Don't have an account?{' '}
+              <Link to="/register">Create an account</Link>
             </p>
           </div>
         </div>
