@@ -1,5 +1,3 @@
-import { faker } from '@faker-js/faker';
-
 const serviceTypes = [
   { value: 'installation', name: 'Installation' },
   { value: 'repair', name: 'Repair' },
@@ -41,14 +39,6 @@ const timeSlots = [
   '12:00 - 14:00',
   '14:00 - 16:00',
   '16:00 - 18:00',
-]
-
-const statuses = [
-  'pending',
-  'confirmed',
-  'in-progress',
-  'completed',
-  'cancelled',
 ]
 
 const getRandomElement = (array) =>

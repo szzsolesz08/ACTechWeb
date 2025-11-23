@@ -193,7 +193,6 @@ function AdminBookingsPage() {
 
       {error && <div className="error-message">{error}</div>}
 
-      {/* Month and Year Selector */}
       <div className="month-year-selector">
         <div className="selector-group">
           <label>Month:</label>

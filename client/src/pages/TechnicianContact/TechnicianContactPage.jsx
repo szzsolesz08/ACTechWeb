@@ -33,13 +33,12 @@ function TechnicianContactPage() {
       setLoading(true)
       const response = await contactService.getAllContacts()
 
-      // Filter contacts assigned to current technician
       const user = authService.getCurrentUser()
       const currentUserId = user.id || user._id
 
       const myContacts = (response.contacts || []).filter((contact) => {
         if (!contact.assignedTo) {
-          return false // Skip unassigned contacts
+          return false
         }
         const assignedToId = contact.assignedToId?.toString()
         const userId = currentUserId?.toString()
@@ -177,7 +176,6 @@ function TechnicianContactPage() {
 
       {error && <div className="error-message">{error}</div>}
 
-      {/* Month and Year Selector */}
       <div className="month-year-selector">
         <div className="selector-group">
           <label>Month:</label>

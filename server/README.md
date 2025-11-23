@@ -39,18 +39,11 @@ Backend API for AC Technician Services booking platform built with Node.js, Expr
 
    ```env
    PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/actechweb
    JWT_SECRET=your-super-secret-jwt-key-change-in-production
    NODE_ENV=development
    ```
 
    **Note:** The `.env` file is gitignored for security. Never commit it to version control.
-
-4. **Start MongoDB (if running locally):**
-
-   ```bash
-   mongod
-   ```
 
 5. **Seed the database (optional but recommended):**
 
@@ -111,26 +104,37 @@ The server will start on `http://localhost:5000`
 
 ```
 server/
+├── config/
+│   └── database.js          # Sequelize database configuration
 ├── middleware/
-│   └── auth.js              # JWT authentication middleware
+│   └── auth.js              # JWT authentication & role-based middleware
 ├── models/
-│   ├── User.js              # User model
-│   └── Booking.js           # Booking model
+│   ├── Booking.js           # Booking model (Sequelize)
+│   ├── Contact.js           # Contact/feedback model (Sequelize)
+│   ├── User.js              # User model (Sequelize)
+│   └── associations.js      # Model associations setup
 ├── routes/
 │   ├── auth.js              # Authentication routes
 │   ├── bookings.js          # Booking routes
+│   ├── contacts.js          # Contact routes
 │   └── users.js             # User routes
 ├── seeders/
-│   ├── data/
-│   │   ├── users.js         # Sample user data
-│   │   └── bookings.js      # Sample booking data
-│   ├── userSeeder.js        # User seeding script
+│   ├── README.md            # Seeding documentation
+│   ├── data/                # Seed data
+│   │   ├── bookings.js      # Sample booking data
+│   │   ├── contacts.js      # Sample contact data
+│   │   └── users.js         # Sample user data
 │   ├── bookingSeeder.js     # Booking seeding script
-│   └── seed.js              # Main seeding script
-├── .env                     # Environment variables
-├── .gitignore               # Git ignore rules
-├── server.js                # Main server file
-└── package.json             # Dependencies and scripts
+│   ├── contactSeeder.js     # Contact seeding script
+│   ├── seed.js              # Main seeding script
+│   └── userSeeder.js        # User seeding script
+├── .env                     # Environment variables (local, not committed)
+├── .env_example             # Example env file for configuration
+├── .eslintrc.json           # ESLint configuration
+├── .prettierrc              # Prettier configuration
+├── server.js                # Main Express server entry point
+├── package.json             # Dependencies and scripts
+└── package-lock.json        # Exact dependency lockfile
 ```
 
 ## 📊 Database Models
@@ -241,12 +245,15 @@ This creates:
 
 ## 🌐 Environment Variables
 
-| Variable      | Description               | Example                               |
-| ------------- | ------------------------- | ------------------------------------- |
-| `PORT`        | Server port               | `5000`                                |
-| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/actechweb` |
-| `JWT_SECRET`  | Secret key for JWT tokens | `your-super-secret-key`               |
-| `NODE_ENV`    | Environment mode          | `development` or `production`         |
+| Variable     | Description               | Example                      |
+| ------------ | ------------------------- | ---------------------------- |
+| `PORT`       | Server port               | `5000`                       |
+| `DB_HOST`    | MySQL host                | `localhost`                  |
+| `DB_USER`    | MySQL username            | `your_username`              |
+| `DB_PASSWORD`| MySQL password            | `your_password`              |
+| `DB_NAME`    | MySQL database name       | `actechweb`                  |
+| `JWT_SECRET` | Secret key for JWT tokens | `your-super-secret-key`      |
+| `NODE_ENV`   | Environment mode          | `development` or `production`|
 
 **Security Note:** The `.env` file is excluded from Git via `.gitignore`. Never commit sensitive credentials.
 
@@ -257,19 +264,21 @@ This creates:
    ```env
    NODE_ENV=production
    JWT_SECRET=<strong-random-secret>
-   MONGODB_URI=<mongodb-atlas-connection-string>
+   DB_HOST=<mysql-host>
+   DB_USER=<mysql-username>
+   DB_PASSWORD=<mysql-password>
+   DB_NAME=<mysql-database-name>
    PORT=5000
    ```
 
-2. **Use MongoDB Atlas** for production database
-
-3. **Use PM2** for process management:
+2. **Use PM2** for process management (optional but recommended):
 
    ```bash
    npm install -g pm2
    pm2 start server.js --name actechweb-server
    ```
 
+3. **Set up proper logging and monitoring**
 4. **Set up proper logging and monitoring**
 
 5. **Use HTTPS** in production
@@ -278,27 +287,35 @@ This creates:
 
 ## 🐛 Common Issues
 
-### MongoDB Connection Error
+### Database Connection Error (MySQL)
 
-- Ensure MongoDB is running: `mongod`
-- Check `MONGODB_URI` in `.env`
-- For Atlas, check network access and credentials
+- Ensure MySQL is running and accessible on the configured host/port.
+- Verify `DB_HOST`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` in `.env`.
+- Check that the `actechweb` database (or your configured DB name) exists.
+- Look at the server logs for Sequelize connection error details.
+
+### Sequelize / Model Errors
+
+- After changing models or associations, restart the server.
+- If you change column names or types, update the seed data to match.
+- Check for mismatched field names between models and seed files.
 
 ### JWT Authentication Error
 
-- Verify `JWT_SECRET` is set in `.env`
-- Check if token is being sent in Authorization header
+- Verify `JWT_SECRET` is set correctly in `.env` (and matches any existing tokens).
+- Check that the `Authorization` header is sent as `Bearer <token>`.
+- Confirm the token has not expired (default is 7 days in this project).
 
 ### Port Already in Use
 
-- Change `PORT` in `.env` to an available port
-- Kill the process using the port: `npx kill-port 5000`
+- Change `PORT` in `.env` to an available port.
+- Or stop the process using the port (e.g. via Task Manager or `npx kill-port 5000`).
 
 ### Seeding Errors
 
-- Ensure MongoDB is running
-- Check database connection string
-- Clear existing data if needed
+- Ensure the database credentials in `.env` are valid and the DB exists.
+- Check that the seed data files match the current model fields.
+- Review console output for specific Sequelize validation or constraint errors.
 
 ## 📝 API Response Format
 

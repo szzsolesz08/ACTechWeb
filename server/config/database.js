@@ -4,7 +4,7 @@ const sequelize = new Sequelize('mysql://root:1234@127.0.0.1:3306/actechweb', {
   host: '127.0.0.1',
   port: 3306,
   dialect: 'mysql',
-  logging: false, // Set to console.log to see SQL queries
+  logging: false,
   pool: {
     max: 5,
     min: 0,

@@ -16,7 +16,6 @@ router.get('/availability/timeslots', async (req, res) => {
     }
 
     const dateObj = new Date(date)
-    // Convert to YYYY-MM-DD format for DATEONLY comparison
     const searchDate = dateObj.toISOString().split('T')[0]
 
     const allTimeSlots = [
@@ -35,26 +34,16 @@ router.get('/availability/timeslots', async (req, res) => {
       },
     })
 
-    console.log(`Found ${bookingsOnDate.length} bookings for ${searchDate}`)
-
-    // Initialize counts for each time slot
     const timeSlotCounts = {}
     allTimeSlots.forEach((slot) => {
       const bookingsInSlot = bookingsOnDate.filter(
         (b) => b.timeSlot === slot && b.status !== 'cancelled'
       )
       timeSlotCounts[slot] = bookingsInSlot.length
-      console.log(`Time slot ${slot}: ${bookingsInSlot.length} bookings`)
     })
 
-    console.log('Time slot counts:', timeSlotCounts)
-
-    console.log('Total technicians:', totalTechnicians)
     const availableTimeSlots = allTimeSlots.filter((slot) => {
       const isAvailable = timeSlotCounts[slot] < totalTechnicians
-      console.log(
-        `Time slot ${slot}: ${isAvailable ? 'available' : 'fully booked'} (${timeSlotCounts[slot]}/${totalTechnicians})`
-      )
       return isAvailable
     })
 
@@ -77,13 +66,9 @@ router.get('/availability/technicians', async (req, res) => {
       return res.status(400).json({ error: 'Date and time slot are required' })
     }
 
-    // Convert to YYYY-MM-DD format for DATEONLY comparison
     const searchDate = new Date(date).toISOString().split('T')[0]
 
-    console.log('Checking availability for:', { date: searchDate, timeSlot })
-
     const totalTechnicians = await User.count({ where: { role: 'technician' } })
-    console.log('Total technicians:', totalTechnicians)
 
     const allTechnicians = await User.findAll({
       where: { role: 'technician' },
@@ -111,27 +96,12 @@ router.get('/availability/technicians', async (req, res) => {
       ],
     })
 
-    console.log(
-      'Booked technicians:',
-      bookedTechnicians.map((b) => ({
-        id: b.assignedTechnicianId,
-        name: b.assignedTechnician
-          ? `${b.assignedTechnician.firstName} ${b.assignedTechnician.lastName}`
-          : 'Unknown',
-      }))
-    )
-
     const bookedTechnicianIds = bookedTechnicians.map(
       (b) => b.assignedTechnicianId
     )
 
     const availableTechnicians = allTechnicians.filter(
       (tech) => !bookedTechnicianIds.includes(tech.id)
-    )
-
-    console.log(
-      'Available technicians:',
-      availableTechnicians.map((t) => `${t.firstName} ${t.lastName}`)
     )
 
     res.json({
@@ -176,19 +146,11 @@ router.post(
         preferredTechnician,
       } = req.body
 
-      // Convert to YYYY-MM-DD format for DATEONLY field
       const bookingDate = new Date(date).toISOString().split('T')[0]
-
-      console.log('Creating booking for:', {
-        date: bookingDate,
-        timeSlot,
-        preferredTechnician,
-      })
 
       let assignedTechnician = undefined
 
       if (preferredTechnician && preferredTechnician !== 'any') {
-        // First check if the preferred technician exists and is active
         const technician = await User.findOne({
           where: {
             id: preferredTechnician,
@@ -202,7 +164,6 @@ router.post(
           })
         }
 
-        // Then check if they are already booked for this time slot
         const existingBooking = await Booking.findOne({
           where: {
             date: bookingDate,
@@ -213,13 +174,6 @@ router.post(
             },
           },
         })
-
-        console.log(
-          'Existing booking check:',
-          existingBooking
-            ? 'FOUND - Technician not available'
-            : 'NOT FOUND - Technician available'
-        )
 
         if (existingBooking) {
           return res.status(400).json({
@@ -263,7 +217,6 @@ router.post(
           })
         }
 
-        // Randomly assign one of the available technicians
         const randomIndex = Math.floor(Math.random() * availableTechnicians.length)
         assignedTechnician = availableTechnicians[randomIndex].id
       }
@@ -279,14 +232,8 @@ router.post(
         customerAddress: address,
         description: description || 'No description provided',
         assignedTechnicianId: assignedTechnician,
-        // Price is optional but if provided we persist it; fallback to 0 to avoid NaN
         price: Number(req.body.price) || 0,
       })
-
-      console.log(
-        'Saving booking with assigned technician:',
-        assignedTechnician
-      )
 
       res.status(201).json({
         message: 'Booking created successfully',
@@ -395,7 +342,6 @@ router.patch(
         return res.status(404).json({ error: 'Booking not found' })
       }
 
-      // Fetch the updated booking
       const booking = await Booking.findByPk(req.params.id)
 
       res.json({ message: 'Booking status updated', booking })
@@ -428,7 +374,6 @@ router.patch(
         return res.status(404).json({ error: 'Booking not found' })
       }
 
-      // Fetch the updated booking
       const booking = await Booking.findByPk(req.params.id, {
         include: [
           {

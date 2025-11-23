@@ -2,7 +2,6 @@ import User from './User.js';
 import Booking from './Booking.js';
 import Contact from './Contact.js';
 
-// User associations
 User.hasMany(Booking, {
   foreignKey: 'userId',
   as: 'bookings'
@@ -18,7 +17,6 @@ User.hasMany(Booking, {
   as: 'assignedBookings'
 });
 
-// Booking associations
 Booking.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user'
@@ -34,7 +32,6 @@ Booking.belongsTo(User, {
   as: 'assignedTechnician'
 });
 
-// Contact associations
 Contact.belongsTo(User, {
   foreignKey: 'assignedToId',
   as: 'assignedTo'

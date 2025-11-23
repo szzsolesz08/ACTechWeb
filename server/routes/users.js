@@ -35,19 +35,18 @@ router.put('/profile', auth, async (req, res) => {
       updatedAt: Date.now(),
     }
 
-    const [numRows, [user]] = await User.update(updateData, {
+    const [numRows] = await User.update(updateData, {
       where: { id: req.user.userId },
-      returning: true,
       validate: true
     })
+
+    if (numRows === 0) {
+      return res.status(404).json({ error: 'User not found' })
+    }
 
     const updatedUser = await User.findByPk(req.user.userId, {
       attributes: { exclude: ['password'] }
     })
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' })
-    }
 
     res.json({
       message: 'Profile updated successfully',

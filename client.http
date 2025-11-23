@@ -1,0 +1,184 @@
+
+### ACTechWeb API - Endpoint Checker
+
+@baseUrl = http://localhost:5000
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImVtYWlsIjoiYXBpQGNoZWNrZXIuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzYzOTI3NjkwLCJleHAiOjE3NjQ1MzI0OTB9.ekZighoRcCKybJ564BUykNjrCmBimTPEhbLTdADy1yE
+
+###
+### Health Check
+###
+
+GET {{baseUrl}}/api/health
+Accept: application/json
+
+###
+### Authentication
+###
+
+### Register new user
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "api@checker.com",
+  "password": "Password123!",
+  "confirmPassword": "Password123!",
+  "phone": "+36123456789",
+  "address": "Test Street 1",
+  "city": "Budapest",
+  "zipCode": "1011"
+}
+
+### Login and get JWT token
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "api@checker.com",
+  "password": "Password123!"
+}
+
+###
+### Users
+###
+
+### Get current user profile (requires Authorization header)
+GET {{baseUrl}}/api/users/profile
+Accept: application/json
+Authorization: Bearer {{authToken}}
+
+### Update current user profile
+PUT {{baseUrl}}/api/users/profile
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "phone": "+36123456789",
+  "address": "Updated Street 2",
+  "city": "Budapest",
+  "zipCode": "1012"
+}
+
+### Get all technicians
+GET {{baseUrl}}/api/users/technicians
+Accept: application/json
+
+###
+### Bookings
+###
+
+### Check available time slots for a date
+GET {{baseUrl}}/api/bookings/availability/timeslots?date=2025-12-01
+Accept: application/json
+
+### Check available technicians for a date and time slot
+GET {{baseUrl}}/api/bookings/availability/technicians?date=2025-12-01&timeSlot=10:00%20-%2012:00
+Accept: application/json
+
+### Create a new booking
+POST {{baseUrl}}/api/bookings
+Content-Type: application/json
+
+{
+  "serviceType": "repair",
+  "maintenancePlan": "basic",
+  "date": "2025-12-01",
+  "timeSlot": "10:00 - 12:00",
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "phone": "+36123456789",
+  "address": "Test Street 1, Budapest",
+  "description": "AC not cooling properly",
+  "preferredTechnician": "any",
+  "price": 15000
+}
+
+### List bookings with optional filters
+GET {{baseUrl}}/api/bookings?status=pending&serviceType=repair
+Accept: application/json
+Authorization: Bearer {{authToken}}
+
+### Get booking by reference number
+GET {{baseUrl}}/api/bookings/AC421402
+Accept: application/json
+
+### Update booking status
+PATCH {{baseUrl}}/api/bookings/1/status
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "status": "confirmed"
+}
+
+### Assign technician to booking
+PATCH {{baseUrl}}/api/bookings/1/assign
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "technicianId": 2
+}
+
+###
+### Contacts
+###
+
+### Submit contact message
+POST {{baseUrl}}/api/contacts
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "phone": "+36123456789",
+  "subject": "service",
+  "message": "I would like to ask about AC maintenance options."
+}
+
+### List contact messages with optional filters
+GET {{baseUrl}}/api/contacts?status=new&subject=service
+Accept: application/json
+Authorization: Bearer {{authToken}}
+
+### Get single contact message by ID
+GET {{baseUrl}}/api/contacts/1
+Accept: application/json
+Authorization: Bearer {{authToken}}
+
+### Update contact status
+PATCH {{baseUrl}}/api/contacts/1/status
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "status": "in-progress"
+}
+
+### Assign contact to a user
+PATCH {{baseUrl}}/api/contacts/1/assign
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "userId": 2
+}
+
+### Update contact notes 
+PATCH {{baseUrl}}/api/contacts/1/notes
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "notes": "Called customer, waiting for reply."
+}
+
+### Delete contact message 
+DELETE {{baseUrl}}/api/contacts/1
+Accept: application/json
+Authorization: Bearer {{authToken}}
+

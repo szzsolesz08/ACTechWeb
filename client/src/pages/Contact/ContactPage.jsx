@@ -45,7 +45,6 @@ function ContactPage() {
         throw new Error(data.error || 'Failed to submit contact message')
       }
 
-      console.log('Contact message submitted successfully:', data)
       setFormSubmitted(true)
       setFormData({
         name: '',

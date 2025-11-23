@@ -196,7 +196,6 @@ function BookingPage() {
         unit: bookingData.unit,
         date: bookingData.date,
         timeSlot: bookingData.timeSlot,
-        // These field names must match the backend validators in server/routes/bookings.js
         name: bookingData.name,
         email: bookingData.email,
         phone: bookingData.phone,

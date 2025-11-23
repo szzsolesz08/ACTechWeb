@@ -65,7 +65,7 @@ const generateMessage = (subject) => {
 
 const generateNotes = (status) => {
   const notes = {
-    read: ['', '', ''], // Most read messages don't have notes yet
+    read: ['', '', ''],
     'in-progress': [
       'Waiting for customer to confirm preferred date',
       'Quote prepared, sent to customer via email',
@@ -95,9 +95,8 @@ const generateNotes = (status) => {
 
 const generateContact = (users) => {
   const subject = getRandomElement(subjects)
-  const createdAt = getRandomPastDate(60) // Last 60 days
+  const createdAt = getRandomPastDate(60)
 
-  // Determine status based on how old the message is
   const daysOld = Math.floor((new Date() - createdAt) / (1000 * 60 * 60 * 24))
   let status
 
@@ -133,7 +132,6 @@ const generateContact = (users) => {
         : faker.date.between({ from: createdAt, to: new Date() }),
   }
 
-  // Assign to staff if status is not 'new'
   if (status !== 'new' && users && users.length > 0 && Math.random() > 0.3) {
     const staffMembers = users.filter(
       (u) => u.role === 'admin' || u.role === 'technician'
@@ -143,7 +141,6 @@ const generateContact = (users) => {
     }
   }
 
-  // Add notes based on status
   contact.notes = generateNotes(status)
 
   return contact
@@ -152,7 +149,6 @@ const generateContact = (users) => {
 export default (users) => {
   const contacts = []
 
-  // Generate 50 contact messages
   for (let i = 0; i < 50; i++) {
     contacts.push(generateContact(users))
   }

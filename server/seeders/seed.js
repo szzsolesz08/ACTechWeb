@@ -26,7 +26,6 @@ const seedDatabase = async () => {
     await sequelize.authenticate();
     console.log('MySQL connected for seeding...\n');
 
-    // Drop tables in correct order
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
     await sequelize.sync({ force: true });
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');

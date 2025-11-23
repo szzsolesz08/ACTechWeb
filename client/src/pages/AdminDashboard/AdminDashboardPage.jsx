@@ -190,7 +190,6 @@ function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Summary Cards */}
       <div className="summary-cards">
         <div className="summary-card">
           <div className="card-icon">💰</div>
@@ -229,7 +228,6 @@ function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Monthly Sales Chart */}
       <div className="chart-container">
         <div className="chart-header">
           <h2>Monthly Sales - {selectedYear}</h2>
@@ -261,7 +259,6 @@ function AdminDashboardPage() {
         </ResponsiveContainer>
       </div>
 
-      {/* Monthly Status Distribution Chart */}
       <div className="chart-container">
         <div className="chart-header">
           <h2>Booking Status Distribution</h2>

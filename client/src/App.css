@@ -1,5 +1,3 @@
-/* AC Technician Web App Styles */
-
 :root {
   --primary-color: #007bff;
   --secondary-color: #6c757d;
@@ -44,7 +42,6 @@
   margin-top: auto;
 }
 
-/* Mobile Responsive Styles */
 @media (max-width: 768px) {
   .app-main {
     padding: 0rem;

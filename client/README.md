@@ -64,26 +64,38 @@ npm run preview
 client/
 ├── public/              # Static assets
 ├── src/
-│   ├── components/      # Reusable UI components
+│   ├── assets/             # Images and other static assets
+│   ├── components/         # Reusable UI components
 │   │   ├── NavigationBar.jsx
 │   │   └── NavigationBar.css
-│   ├── pages/          # Page components
-│   │   ├── HomePage.jsx
-│   │   ├── LoginPage.jsx
-│   │   ├── RegisterPage.jsx
-│   │   ├── ProfilePage.jsx
-│   │   ├── BookingPage.jsx
-│   │   ├── AdminBookingsPage.jsx
-│   │   └── TechnicianBookingsPage.jsx
-│   ├── services/       # API service modules
+│   ├── pages/              # Page components (each folder contains its page files)
+│   │   ├── About/
+│   │   ├── AdminBookings/
+│   │   ├── AdminContact/
+│   │   ├── AdminDashboard/
+│   │   ├── Auth/
+│   │   ├── Booking/
+│   │   ├── Contact/
+│   │   ├── Home/
+│   │   ├── Prices/
+│   │   ├── Profile/
+│   │   ├── Services/
+│   │   ├── TechnicianBookings/
+│   │   └── TechnicianContact/
+│   ├── services/           # API service modules
 │   │   ├── api.js
 │   │   ├── authService.js
 │   │   ├── bookingService.js
+│   │   ├── contactService.js
 │   │   └── userService.js
-│   ├── App.jsx         # Main app component
-│   ├── App.css         # Global styles
-│   └── main.jsx        # Entry point
-├── .env                # Environment variables
+│   ├── utils/              # Shared utilities
+│   │   ├── Prices.js
+│   │   ├── Units.js
+│   │   └── invoiceGenerator.js
+│   ├── App.jsx             # Main app component
+│   ├── App.css             # Global styles
+│   └── main.jsx            # Entry point
+├── .env                # Optional environment variables
 ├── index.html          # HTML template
 ├── vite.config.js      # Vite configuration
 ├── eslint.config.js    # ESLint configuration

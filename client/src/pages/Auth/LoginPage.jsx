@@ -31,12 +31,10 @@ function LoginPage() {
         loginData.email,
         loginData.password
       )
-      console.log('Login successful:', response.user)
       window.dispatchEvent(new Event('storage'))
       navigate('/')
     } catch (err) {
       console.error('Login error:', err)
-      // Clear password field on error
       setLoginData((prev) => ({ ...prev, password: '' }))
 
       if (err.response?.data?.message) {

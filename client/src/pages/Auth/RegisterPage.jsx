@@ -100,7 +100,6 @@ function RegisterPage() {
         }
 
         const response = await authService.register(userData)
-        console.log('Registration successful:', response.user)
 
         window.dispatchEvent(new Event('storage'))
 
@@ -123,7 +122,7 @@ function RegisterPage() {
         setLoading(false)
       }
     } else {
-      console.log('Form has validation errors')
+      console.error('Form has validation errors')
     }
   }
 

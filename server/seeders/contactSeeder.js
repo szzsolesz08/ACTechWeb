@@ -4,7 +4,7 @@ import getContactsData from './data/contacts.js';
 import dotenv from 'dotenv';
 import sequelize from '../config/database.js';
 
-dotenv.config(); // assuming you have a db config file
+dotenv.config();
 
 const seedContacts = async (skipSync = false) => {
   try {

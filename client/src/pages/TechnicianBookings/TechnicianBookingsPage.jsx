@@ -16,7 +16,6 @@ function TechnicianBookingsPage() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
   useEffect(() => {
-    // Check if user is technician
     const user = authService.getCurrentUser()
     if (!user || user.role !== 'technician') {
       navigate('/')
@@ -32,14 +31,12 @@ function TechnicianBookingsPage() {
       setLoading(true)
       const response = await bookingService.getAllBookings()
 
-      // Filter bookings for current technician
       const user = authService.getCurrentUser()
-      // User object has 'id' field, not '_id'
       const currentUserId = user.id || user._id
 
       const myBookings = (response.bookings || []).filter((booking) => {
         if (!booking.assignedTechnician) {
-          return false // Skip unassigned bookings
+          return false
         }
         const assignedTechId = booking.assignedTechnicianId?.toString()
         const userId = currentUserId?.toString()
@@ -58,7 +55,6 @@ function TechnicianBookingsPage() {
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
       await bookingService.updateBookingStatus(bookingId, newStatus)
-      // Refresh bookings
       fetchBookings()
     } catch (err) {
       console.error('Error updating status:', err)
@@ -151,7 +147,6 @@ function TechnicianBookingsPage() {
 
       {error && <div className="error-message">{error}</div>}
 
-      {/* Month and Year Selector */}
       <div className="month-year-selector">
         <div className="selector-group">
           <label>Month:</label>
@@ -187,7 +182,6 @@ function TechnicianBookingsPage() {
         </div>
       </div>
 
-      {/* Statistics Cards */}
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-value">{stats.total}</div>
@@ -215,7 +209,6 @@ function TechnicianBookingsPage() {
         </div>
       </div>
 
-      {/* Filter Tabs */}
       <div className="filter-tabs">
         <button
           className={filter === 'all' ? 'active' : ''}
@@ -255,7 +248,6 @@ function TechnicianBookingsPage() {
         </button>
       </div>
 
-      {/* Bookings Table */}
       <div className="bookings-table-container">
         <table className="bookings-table">
           <thead>
@@ -345,7 +337,6 @@ function TechnicianBookingsPage() {
         </table>
       </div>
 
-      {/* Booking Details Modal */}
       {selectedBooking && (
         <div className="modal-overlay" onClick={() => setSelectedBooking(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
