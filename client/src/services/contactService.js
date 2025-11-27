@@ -20,10 +20,11 @@ const contactService = {
     }
   },
 
-  updateContactStatus: async (contactId, status) => {
+  updateContactStatus: async (contactId, status, notes = '') => {
     try {
       const response = await api.patch(`/contacts/${contactId}/status`, {
         status,
+        notes,
       })
       return response.data
     } catch (error) {

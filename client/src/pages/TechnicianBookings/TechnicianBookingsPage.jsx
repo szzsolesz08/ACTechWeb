@@ -14,6 +14,7 @@ function TechnicianBookingsPage() {
   const [currentUser, setCurrentUser] = useState(null)
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [statusModalData, setStatusModalData] = useState(null)
 
   useEffect(() => {
     const user = authService.getCurrentUser()
@@ -52,14 +53,36 @@ function TechnicianBookingsPage() {
     }
   }
 
-  const handleStatusChange = async (bookingId, newStatus) => {
+  const handleStatusChange = async (bookingId, newStatus, notes = '') => {
     try {
-      await bookingService.updateBookingStatus(bookingId, newStatus)
+      await bookingService.updateBookingStatus(bookingId, newStatus, notes)
       fetchBookings()
     } catch (err) {
       console.error('Error updating status:', err)
       alert('Failed to update booking status')
     }
+  }
+
+  const openStatusModal = (booking, newStatus) => {
+    setStatusModalData({
+      booking,
+      newStatus,
+      notes: booking.notes || '',
+    })
+  }
+
+  const closeStatusModal = () => {
+    setStatusModalData(null)
+  }
+
+  const confirmStatusChange = async () => {
+    if (!statusModalData) return
+    await handleStatusChange(
+      statusModalData.booking.id,
+      statusModalData.newStatus,
+      statusModalData.notes || ''
+    )
+    closeStatusModal()
   }
 
   const getFilteredBookings = () => {
@@ -301,9 +324,7 @@ function TechnicianBookingsPage() {
                     <select
                       className={`status-badge ${getStatusBadgeClass(booking.status)}`}
                       value={booking.status}
-                      onChange={(e) =>
-                        handleStatusChange(booking.id, e.target.value)
-                      }
+                      onChange={(e) => openStatusModal(booking, e.target.value)}
                     >
                       <option key="pending" value="pending">
                         Pending
@@ -336,6 +357,55 @@ function TechnicianBookingsPage() {
           </tbody>
         </table>
       </div>
+
+      {statusModalData && (
+        <div className="modal-overlay" onClick={closeStatusModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Update Job Status</h2>
+              <button className="modal-close" onClick={closeStatusModal}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-group">
+                <label>Job:</label>
+                <p>{statusModalData.booking.referenceNumber}</p>
+              </div>
+              <div className="detail-group">
+                <label>New Status:</label>
+                <p
+                  className={`status-badge ${getStatusBadgeClass(statusModalData.newStatus)}`}
+                >
+                  {statusModalData.newStatus}
+                </p>
+              </div>
+              <div className="detail-group">
+                <label>Internal Notes:</label>
+                <textarea
+                  rows="4"
+                  value={statusModalData.notes}
+                  onChange={(e) =>
+                    setStatusModalData({
+                      ...statusModalData,
+                      notes: e.target.value,
+                    })
+                  }
+                  placeholder="Add notes about this job update (optional)"
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={closeStatusModal}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" onClick={confirmStatusChange}>
+                Yes, Update Status
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedBooking && (
         <div className="modal-overlay" onClick={() => setSelectedBooking(null)}>
@@ -416,7 +486,7 @@ function TechnicianBookingsPage() {
               <button
                 className="btn-action btn-start"
                 onClick={() => {
-                  handleStatusChange(selectedBooking.id, 'in-progress')
+                  openStatusModal(selectedBooking, 'in-progress')
                   setSelectedBooking(null)
                 }}
                 disabled={
@@ -429,7 +499,7 @@ function TechnicianBookingsPage() {
               <button
                 className="btn-action btn-complete"
                 onClick={() => {
-                  handleStatusChange(selectedBooking.id, 'completed')
+                  openStatusModal(selectedBooking, 'completed')
                   setSelectedBooking(null)
                 }}
                 disabled={

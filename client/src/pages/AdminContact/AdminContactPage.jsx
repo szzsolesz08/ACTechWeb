@@ -17,6 +17,7 @@ function AdminContactPage() {
   const [notesText, setNotesText] = useState('')
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [statusModalData, setStatusModalData] = useState(null)
 
   useEffect(() => {
     const user = authService.getCurrentUser()
@@ -46,14 +47,36 @@ function AdminContactPage() {
     }
   }
 
-  const handleStatusChange = async (contactId, newStatus) => {
+  const handleStatusChange = async (contactId, newStatus, notes = '') => {
     try {
-      await contactService.updateContactStatus(contactId, newStatus)
+      await contactService.updateContactStatus(contactId, newStatus, notes)
       fetchData()
     } catch (err) {
       console.error('Error updating status:', err)
       alert('Failed to update contact status')
     }
+  }
+
+  const openStatusModal = (contact, newStatus) => {
+    setStatusModalData({
+      contact,
+      newStatus,
+      notes: contact.notes || '',
+    })
+  }
+
+  const closeStatusModal = () => {
+    setStatusModalData(null)
+  }
+
+  const confirmStatusChange = async () => {
+    if (!statusModalData) return
+    await handleStatusChange(
+      statusModalData.contact.id,
+      statusModalData.newStatus,
+      statusModalData.notes || ''
+    )
+    closeStatusModal()
   }
 
   const handleAssignStaff = async (contactId, userId) => {
@@ -342,9 +365,7 @@ function AdminContactPage() {
                     <select
                       className={`status-badge ${getStatusBadgeClass(contact.status)}`}
                       value={contact.status}
-                      onChange={(e) =>
-                        handleStatusChange(contact.id, e.target.value)
-                      }
+                      onChange={(e) => openStatusModal(contact, e.target.value)}
                     >
                       <option key="new" value="new">
                         New
@@ -395,6 +416,55 @@ function AdminContactPage() {
           </tbody>
         </table>
       </div>
+
+      {statusModalData && (
+        <div className="modal-overlay" onClick={closeStatusModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Update Contact Status</h2>
+              <button className="modal-close" onClick={closeStatusModal}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-group">
+                <label>Contact:</label>
+                <p>{statusModalData.contact.name}</p>
+              </div>
+              <div className="detail-group">
+                <label>New Status:</label>
+                <p
+                  className={`status-badge ${getStatusBadgeClass(statusModalData.newStatus)}`}
+                >
+                  {statusModalData.newStatus}
+                </p>
+              </div>
+              <div className="detail-group">
+                <label>Internal Notes:</label>
+                <textarea
+                  rows="4"
+                  value={statusModalData.notes}
+                  onChange={(e) =>
+                    setStatusModalData({
+                      ...statusModalData,
+                      notes: e.target.value,
+                    })
+                  }
+                  placeholder="Add notes about this customer inquiry (optional)"
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={closeStatusModal}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" onClick={confirmStatusChange}>
+                Yes, Update Status
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedContact && (
         <div className="modal-overlay" onClick={() => setSelectedContact(null)}>

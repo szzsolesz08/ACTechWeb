@@ -323,6 +323,10 @@ router.patch(
     body('status')
       .isIn(['pending', 'confirmed', 'in-progress', 'completed', 'cancelled'])
       .withMessage('Invalid status'),
+    body('notes')
+      .optional()
+      .isString()
+      .withMessage('Notes must be a string'),
   ],
   async (req, res) => {
     try {
@@ -331,12 +335,18 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const numRows = await Booking.update(
-        { status: req.body.status, updatedAt: Date.now() },
-        {
-          where: { id: req.params.id }
-        }
-      )
+      const updateData = {
+        status: req.body.status,
+        updatedAt: Date.now(),
+      }
+
+      if (typeof req.body.notes === 'string') {
+        updateData.notes = req.body.notes
+      }
+
+      const numRows = await Booking.update(updateData, {
+        where: { id: req.params.id },
+      })
 
       if (numRows === 0) {
         return res.status(404).json({ error: 'Booking not found' })
