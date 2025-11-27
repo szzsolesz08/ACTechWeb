@@ -29,10 +29,11 @@ const bookingService = {
     }
   },
 
-  updateBookingStatus: async (bookingId, status) => {
+  updateBookingStatus: async (bookingId, status, notes = '') => {
     try {
       const response = await api.patch(`/bookings/${bookingId}/status`, {
         status,
+        notes,
       })
       return response.data
     } catch (error) {

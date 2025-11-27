@@ -18,6 +18,7 @@ function AdminBookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState(null)
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [statusModalData, setStatusModalData] = useState(null)
 
   useEffect(() => {
     const user = authService.getCurrentUser()
@@ -47,14 +48,36 @@ function AdminBookingsPage() {
     }
   }
 
-  const handleStatusChange = async (bookingId, newStatus) => {
+  const handleStatusChange = async (bookingId, newStatus, notes = '') => {
     try {
-      await bookingService.updateBookingStatus(bookingId, newStatus)
+      await bookingService.updateBookingStatus(bookingId, newStatus, notes)
       fetchData()
     } catch (err) {
       console.error('Error updating status:', err)
       alert('Failed to update booking status')
     }
+  }
+
+  const openStatusModal = (booking, newStatus) => {
+    setStatusModalData({
+      booking,
+      newStatus,
+      notes: booking.notes || '',
+    })
+  }
+
+  const closeStatusModal = () => {
+    setStatusModalData(null)
+  }
+
+  const confirmStatusChange = async () => {
+    if (!statusModalData) return
+    await handleStatusChange(
+      statusModalData.booking.id,
+      statusModalData.newStatus,
+      statusModalData.notes || ''
+    )
+    closeStatusModal()
   }
 
   const handleAssignTechnician = async (bookingId, technicianId) => {
@@ -359,9 +382,7 @@ function AdminBookingsPage() {
                     <select
                       className={`status-badge ${getStatusBadgeClass(booking.status)}`}
                       value={booking.status}
-                      onChange={(e) =>
-                        handleStatusChange(booking.id, e.target.value)
-                      }
+                      onChange={(e) => openStatusModal(booking, e.target.value)}
                     >
                       <option value="pending">Pending</option>
                       <option value="confirmed">Confirmed</option>
@@ -409,6 +430,55 @@ function AdminBookingsPage() {
           </tbody>
         </table>
       </div>
+
+      {statusModalData && (
+        <div className="modal-overlay" onClick={closeStatusModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Update Booking Status</h2>
+              <button className="modal-close" onClick={closeStatusModal}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-group">
+                <label>Booking:</label>
+                <p>{statusModalData.booking.referenceNumber}</p>
+              </div>
+              <div className="detail-group">
+                <label>New Status:</label>
+                <p
+                  className={`status-badge ${getStatusBadgeClass(statusModalData.newStatus)}`}
+                >
+                  {statusModalData.newStatus}
+                </p>
+              </div>
+              <div className="detail-group">
+                <label>Internal Notes:</label>
+                <textarea
+                  rows="4"
+                  value={statusModalData.notes}
+                  onChange={(e) =>
+                    setStatusModalData({
+                      ...statusModalData,
+                      notes: e.target.value,
+                    })
+                  }
+                  placeholder="Add notes about this status change (optional)"
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={closeStatusModal}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" onClick={confirmStatusChange}>
+                Yes, Update Status
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedBooking && (
         <div className="modal-overlay" onClick={() => setSelectedBooking(null)}>

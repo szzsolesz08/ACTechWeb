@@ -110,6 +110,10 @@ router.patch(
     body('status')
       .isIn(['new', 'read', 'in-progress', 'resolved', 'closed'])
       .withMessage('Invalid status'),
+    body('notes')
+      .optional()
+      .isString()
+      .withMessage('Notes must be a string'),
   ],
   async (req, res) => {
     try {
@@ -118,12 +122,18 @@ router.patch(
         return res.status(400).json({ errors: errors.array() })
       }
 
-      const numRows = await Contact.update(
-        { status: req.body.status, updatedAt: Date.now() },
-        {
-          where: { id: req.params.id }
-        }
-      )
+      const updateData = {
+        status: req.body.status,
+        updatedAt: Date.now(),
+      }
+
+      if (typeof req.body.notes === 'string') {
+        updateData.notes = req.body.notes
+      }
+
+      const numRows = await Contact.update(updateData, {
+        where: { id: req.params.id },
+      })
 
       if (numRows === 0) {
         return res.status(404).json({ error: 'Contact message not found' })
