@@ -176,10 +176,6 @@ const generateBooking = (customers, technicians, year) => {
     booking.assignedTechnicianId = getRandomElement(technicians).id
   }
 
-  if (status === 'pending' && Math.random() > 0.5) {
-    booking.preferredTechnicianId = getRandomElement(technicians).id
-  }
-
   if (status === 'in-progress') {
     const inProgressNotes = [
       'Technician on site, working on the issue',

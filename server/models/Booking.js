@@ -93,14 +93,6 @@ Booking.init({
       notNull: { msg: 'Description is required' }
     }
   },
-  preferredTechnicianId: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Users',
-      key: 'id'
-    }
-  },
   assignedTechnicianId: {
     type: DataTypes.INTEGER,
     allowNull: true,

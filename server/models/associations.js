@@ -8,11 +8,6 @@ User.hasMany(Booking, {
 });
 
 User.hasMany(Booking, {
-  foreignKey: 'preferredTechnicianId',
-  as: 'preferredBookings'
-});
-
-User.hasMany(Booking, {
   foreignKey: 'assignedTechnicianId',
   as: 'assignedBookings'
 });
@@ -20,11 +15,6 @@ User.hasMany(Booking, {
 Booking.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user'
-});
-
-Booking.belongsTo(User, {
-  foreignKey: 'preferredTechnicianId',
-  as: 'preferredTechnician'
 });
 
 Booking.belongsTo(User, {
