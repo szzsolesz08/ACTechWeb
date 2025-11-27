@@ -2,7 +2,7 @@
 ### ACTechWeb API - Endpoint Checker
 
 @baseUrl = http://localhost:5000
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImVtYWlsIjoiYXBpQGNoZWNrZXIuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzYzOTI3NjkwLCJleHAiOjE3NjQ1MzI0OTB9.ekZighoRcCKybJ564BUykNjrCmBimTPEhbLTdADy1yE
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImVtYWlsIjoiYXBpQGNoZWNrZXIuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzYzOTc4MTU1LCJleHAiOjE3NjQ1ODI5NTV9.xsvDlC0Wl8VtdBjNl-nQOrVkHPs4k2STAITOk16ZB1c
 
 ###
 ### Health Check

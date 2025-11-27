@@ -377,6 +377,7 @@ function BookingPage() {
                 ? 'Any additional information or special requirements...'
                 : 'Describe your issue or requirements...'
             }
+            required
           ></textarea>
         </div>
 

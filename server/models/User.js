@@ -41,7 +41,10 @@ User.init({
     }
   },
   phone: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    validate: {
+      notEmpty: { msg: 'Phone number is required' }
+    }
   },
   address: {
     type: DataTypes.STRING

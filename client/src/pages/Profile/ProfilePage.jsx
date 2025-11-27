@@ -73,6 +73,12 @@ function ProfilePage() {
     setError('')
     setSuccess('')
 
+    if (editData.zipCode && !/^\d{4,6}$/.test(editData.zipCode)) {
+      setError('Please enter a valid ZIP code (4-6 digits)')
+      setSaving(false)
+      return
+    }
+
     try {
       const response = await userService.updateProfile(editData)
 
@@ -212,6 +218,7 @@ function ProfilePage() {
                   name="phone"
                   value={editData.phone}
                   onChange={handleChange}
+                  required
                 />
               </div>
 

@@ -15,7 +15,6 @@ function RegisterPage() {
     address: '',
     city: '',
     zipCode: '',
-    termsAccepted: false,
   })
 
   const [errors, setErrors] = useState({})
@@ -70,10 +69,6 @@ function RegisterPage() {
 
     if (registerData.zipCode && !/^\d{4,6}$/.test(registerData.zipCode)) {
       newErrors.zipCode = 'Please enter a valid ZIP code (4-6 digits)'
-    }
-
-    if (!registerData.termsAccepted) {
-      newErrors.termsAccepted = 'You must agree to the terms and conditions'
     }
 
     setErrors(newErrors)
@@ -282,26 +277,6 @@ function RegisterPage() {
                   />
                   {errors.zipCode && (
                     <div className="error-message">{errors.zipCode}</div>
-                  )}
-                </div>
-              </div>
-
-              <div className="form-checkboxes">
-                <div className="form-group checkbox-group">
-                  <input
-                    type="checkbox"
-                    id="termsAccepted"
-                    name="termsAccepted"
-                    checked={registerData.termsAccepted}
-                    onChange={handleChange}
-                    className={errors.termsAccepted ? 'error' : ''}
-                  />
-                  <label htmlFor="termsAccepted">
-                    I agree to the <a href="/terms">Terms and Conditions</a> and{' '}
-                    <a href="/privacy">Privacy Policy</a>*
-                  </label>
-                  {errors.termsAccepted && (
-                    <div className="error-message">{errors.termsAccepted}</div>
                   )}
                 </div>
               </div>
