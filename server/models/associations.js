@@ -3,18 +3,8 @@ import Booking from './Booking.js';
 import Contact from './Contact.js';
 
 User.hasMany(Booking, {
-  foreignKey: 'userId',
-  as: 'bookings'
-});
-
-User.hasMany(Booking, {
   foreignKey: 'assignedTechnicianId',
   as: 'assignedBookings'
-});
-
-Booking.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user'
 });
 
 Booking.belongsTo(User, {

@@ -4,14 +4,6 @@ import sequelize from '../config/database.js';
 class Booking extends Model {}
 
 Booking.init({
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Users',
-      key: 'id'
-    }
-  },
   referenceNumber: {
     type: DataTypes.STRING,
     unique: true

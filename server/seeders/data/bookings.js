@@ -140,7 +140,6 @@ const generateBooking = (customers, technicians, year) => {
   }
 
   const booking = {
-    userId: customer.id,
     serviceType,
     date,
     timeSlot: getRandomElement(timeSlots),
