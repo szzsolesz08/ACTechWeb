@@ -407,7 +407,7 @@ function AdminContactPage() {
                       className="btn-view"
                       onClick={() => setSelectedContact(contact)}
                     >
-                      View
+                      View Details
                     </button>
                   </td>
                 </tr>

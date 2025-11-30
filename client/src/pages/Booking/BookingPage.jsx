@@ -30,7 +30,12 @@ function BookingPage() {
     name: currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : '',
     email: currentUser?.email || '',
     phone: currentUser?.phone || '',
-    address: currentUser?.address || '',
+    address:
+      currentUser?.address +
+        ', ' +
+        currentUser?.city +
+        ', ' +
+        currentUser?.zipCode || '',
     description: '',
     preferredTechnician: 'any',
     price: 0,

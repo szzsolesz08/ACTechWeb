@@ -136,6 +136,7 @@ router.post(
       const {
         serviceType,
         maintenancePlan,
+        unit,
         date,
         timeSlot,
         name,
@@ -224,6 +225,7 @@ router.post(
       const booking = await Booking.create({
         serviceType,
         maintenancePlan: maintenancePlan || '',
+        unit: unit || null,
         date: bookingDate,
         timeSlot,
         customerName: name,

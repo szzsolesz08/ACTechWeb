@@ -2,7 +2,7 @@
 ### ACTechWeb API - Endpoint Checker
 
 @baseUrl = http://localhost:5000
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjksImVtYWlsIjoiYXBpQGNoZWNrZXIuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzYzOTc4MTU1LCJleHAiOjE3NjQ1ODI5NTV9.xsvDlC0Wl8VtdBjNl-nQOrVkHPs4k2STAITOk16ZB1c
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJlbWFpbCI6ImFwaUBjaGVja2VyMi5jb20iLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NjQ1MTI1MTIsImV4cCI6MTc2NTExNzMxMn0.3UAcLQABMWdjwyLQLAiUN5IcUc8Oa-6ZBuuiTkNHBjY
 
 ###
 ### Health Check
@@ -22,7 +22,7 @@ Content-Type: application/json
 {
   "firstName": "John",
   "lastName": "Doe",
-  "email": "api@checker.com",
+  "email": "api@checker2.com",
   "password": "Password123!",
   "confirmPassword": "Password123!",
   "phone": "+36123456789",
@@ -36,7 +36,7 @@ POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "api@checker.com",
+  "email": "api@checker2.com",
   "password": "Password123!"
 }
 
@@ -79,22 +79,23 @@ Accept: application/json
 GET {{baseUrl}}/api/bookings/availability/technicians?date=2025-12-01&timeSlot=10:00%20-%2012:00
 Accept: application/json
 
-### Create a new booking
+### Create a new installation booking (with unit)
 POST {{baseUrl}}/api/bookings
 Content-Type: application/json
 
 {
-  "serviceType": "repair",
-  "maintenancePlan": "basic",
+  "serviceType": "installation",
+  "maintenancePlan": "",
+  "unit": 1,
   "date": "2025-12-01",
   "timeSlot": "10:00 - 12:00",
   "name": "John Doe",
   "email": "john.doe@example.com",
   "phone": "+36123456789",
   "address": "Test Street 1, Budapest",
-  "description": "AC not cooling properly",
+  "description": "New AC installation",
   "preferredTechnician": "any",
-  "price": 15000
+  "price": 150000
 }
 
 ### List bookings with optional filters
@@ -103,7 +104,7 @@ Accept: application/json
 Authorization: Bearer {{authToken}}
 
 ### Get booking by reference number
-GET {{baseUrl}}/api/bookings/AC421402
+GET {{baseUrl}}/api/bookings/AC917255
 Accept: application/json
 
 ### Update booking status
